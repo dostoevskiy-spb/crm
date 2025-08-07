@@ -1,0 +1,6 @@
+# https://hub.docker.com/r/dockage/mailcatcher
+services:
+  mailcatcher:
+    image: dockage/mailcatcher
+    restart: unless-stopped
+    command: mailcatcher -f --ip=0.0.0.0 --http-port=80

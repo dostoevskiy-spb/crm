@@ -1,0 +1,12 @@
+services:
+  # Node для фронтенда
+  frontend:
+    image: node:24-alpine
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    ports:
+      - "${FRONTEND_PORT:-5173}:5173"
+    command: npm run dev
+    networks:
+      - crm_network

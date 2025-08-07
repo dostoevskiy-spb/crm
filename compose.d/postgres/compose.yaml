@@ -1,0 +1,25 @@
+# https://hub.docker.com/_/postgres
+services:
+  postgres:
+    image: postgres:latest
+    restart: unless-stopped
+#    shm_size: 128mb
+    env_file:
+      - path: .env
+      - path: ../.env
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+volumes:
+  postgres:
