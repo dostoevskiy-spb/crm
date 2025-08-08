@@ -1,7 +1,9 @@
 services:
   ### SERVICES
   api:
-    image: php:8.4-fp
+    build:
+      context: .
+      dockerfile: Dockerfile
     restart: unless-stopped
     env_file:
       - path: .env
@@ -12,265 +14,19 @@ services:
         max-size: "10m"
         max-file: "3"
     volumes:
-      - ./:/var/www
+      - ../../:/var/www
+    working_dir: /var/www
+    expose:
+      - "9000"
     depends_on:
-      postgres:
+      db:
         condition: service_healthy
-      bouncer:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-      redis-master:
-        condition: service_healthy
-
-  backend-consumer-send-email-message:
-    <<: *base_backend_service
-    command:
-      - /bin/sh
-      - -c
-      - |
-        while [ ! -f vendor/autoload.php ]; do
-          sleep 5
-        done
-        php bin/console messenger:consume send-email-message
-
-  backend-consumer-search-export-result-task:
-    <<: *base_backend_service
-    command:
-      - /bin/sh
-      - -c
-      - |
-        while [ ! -f vendor/autoload.php ]; do
-          sleep 5
-        done
-        php bin/console messenger:consume search-export-result-task
-
-  backend-consumer-entity-updated-event:
-    <<: *base_backend_service
-    command:
-      - /bin/sh
-      - -c
-      - |
-        while [ ! -f vendor/autoload.php ]; do
-          sleep 5
-        done
-        php bin/console messenger:consume entity-updated-event
-
-  backend-consumer-save-entity-updated-event:
-    <<: *base_backend_service
-    command:
-      - /bin/sh
-      - -c
-      - |
-        while [ ! -f vendor/autoload.php ]; do
-          sleep 5
-        done
-        php bin/console messenger:consume save-entity-updated-event
-
-  backend-consumer-entity-change-email-notification:
-    <<: *base_backend_service
-    command:
-      - /bin/sh
-      - -c
-      - |
-        while [ ! -f vendor/autoload.php ]; do
-          sleep 5
-        done
-        php bin/console messenger:consume entity-change-email-notification
-
-  backend-consumer-search-index-update:
-    <<: *base_backend_service
-    command:
-      - /bin/sh
-      - -c
-      - |
-        while [ ! -f vendor/autoload.php ]; do
-          sleep 5
-        done
-        php bin/console messenger:consume search-index-update
-
-  backend:
-    <<: *base_backend_service
-    extra_hosts:
-      # it's built-in on mac, but missing on linux, this way should be compatible both with mac & linux
-      # this hostname is used to connect from debug PHP debugger to IDE running on host system
-      - "host.docker.internal:host-gateway"
-    volumes:
-      - backend_bash_history_volume:/home/www-data/.bash_history
-      - ./../../backend:/var/www
-
-  ### JOBS
-  backend-entity-change-subscription-send-batch:
-    <<: *base_backend_service
-    profiles: ['entity-subscription']
-    restart: 'no'
-    command:
-      - /bin/sh
-      - -c
-      - |
-        while [ ! -f vendor/autoload.php ]; do
-          sleep 5
-        done
-        php bin/console app:entity-change-subscription:send-batch
-
-  backend-billing-row-balance-reset:
-    <<: *base_backend_service
-    profiles: ['billing-jobs']
-    restart: 'no'
-    command:
-      - /bin/sh
-      - -c
-      - |
-        while [ ! -f vendor/autoload.php ]; do
-          sleep 5
-        done
-        php bin/console billing:scheduler reset-row-balance
-
-  backend-billing-check-expired-export-payments:
-    <<: *base_backend_service
-    profiles: ['billing-jobs']
-    restart: 'no'
-    command:
-      - /bin/sh
-      - -c
-      - |
-        while [ ! -f vendor/autoload.php ]; do
-          sleep 5
-        done
-        php bin/console billing:scheduler check-expired-export-payments
-
-  backend-billing-check-expired-subscription:
-    <<: *base_backend_service
-    profiles: ['billing-jobs']
-    restart: 'no'
-    command:
-      - /bin/sh
-      - -c
-      - |
-        while [ ! -f vendor/autoload.php ]; do
-          sleep 5
-        done
-        php bin/console billing:scheduler check-expired-subscription
-
-  backend-billing-deactivate-canceled-subscriptions:
-    <<: *base_backend_service
-    profiles: ['billing-jobs']
-    command:
-      - /bin/sh
-      - -c
-      - |
-        while [ ! -f vendor/autoload.php ]; do
-          sleep 5
-        done
-        php bin/console billing:scheduler deactivate-canceled-subscriptions
-
-  backend-update-officer-countries:
-    <<: *base_backend_service
-    profiles: ['update-person-countries', 'person-full-recognition']
-    command:
-      - /bin/sh
-      - -c
-      - |
-        while [ ! -f vendor/autoload.php ]; do
-          sleep 5
-        done
-        php bin/console app:update-officer-countries --renew
-
-  backend-update-psc-countries:
-    <<: *base_backend_service
-    profiles: ['update-person-countries', 'person-full-recognition']
-    command:
-      - /bin/sh
-      - -c
-      - |
-        while [ ! -f vendor/autoload.php ]; do
-          sleep 5
-        done
-        php bin/console app:update-psc-countries --renew
-
-  backend-person-recognition-officer:
-    <<: *base_backend_service
-    profiles: ['recognize-person', 'person-full-recognition']
-    command:
-      - /bin/sh
-      - -c
-      - |
-        while [ ! -f vendor/autoload.php ]; do
-          sleep 5
-        done
-        php bin/console app:person:recognition officer
-
-  backend-person-recognition-psc:
-    <<: *base_backend_service
-    profiles: ['recognize-person', 'person-full-recognition']
-    command:
-      - /bin/sh
-      - -c
-      - |
-        while [ ! -f vendor/autoload.php ]; do
-          sleep 5
-        done
-        php bin/console app:person:recognition psc
-
-  backend-elastic-company-v2-index:
-    <<: *base_backend_service
-    profiles: ['search-index-company', 'search-index']
-    command:
-      - /bin/sh
-      - -c
-      - |
-        while [ ! -f vendor/autoload.php ]; do
-          sleep 5
-        done
-        php -d memory_limit=1024M bin/console app:elastica:index search_company_v2_index --force-recreate --portion=2000
-
-  backend-elastic-officer-index:
-    <<: *base_backend_service
-    profiles: ['search-index-person', 'search-index']
-    command:
-      - /bin/sh
-      - -c
-      - |
-        while [ ! -f vendor/autoload.php ]; do
-          sleep 5
-        done
-        php -d memory_limit=1024M bin/console app:elastica:index search_officer_index --force-recreate --portion=2000
-
-  backend-elastic-psc-index:
-    <<: *base_backend_service
-    profiles: ['search-index-person', 'search-index']
-    command:
-      - /bin/sh
-      - -c
-      - |
-        while [ ! -f vendor/autoload.php ]; do
-          sleep 5
-        done
-        php -d memory_limit=1024M bin/console app:elastica:index search_psc_index --force-recreate --portion=2000
-
-  backend-elastic-company-suggestions-index:
-    <<: *base_backend_service
-    profiles: ['search-index-company', 'search-index']
-    command:
-      - /bin/sh
-      - -c
-      - |
-        while [ ! -f vendor/autoload.php ]; do
-          sleep 5
-        done
-        php -d memory_limit=1024M bin/console app:elastica:index suggestions_company_name --force-recreate --portion=4000
-
-  backend-elastic-person-suggestions-index:
-    <<: *base_backend_service
-    profiles: ['search-index-person', 'search-index']
-    command:
-      - /bin/sh
-      - -c
-      - |
-        while [ ! -f vendor/autoload.php ]; do
-          sleep 5
-        done
-        php -d memory_limit=1024M bin/console app:elastica:index suggestions_officer_name --force-recreate --portion=4000
+#      rabbitmq:
+#        condition: service_healthy
+#      redis-master:
+#        condition: service_healthy
+    networks:
+      - crm_network
 
 volumes:
   backend_bash_history_volume:

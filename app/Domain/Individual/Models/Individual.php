@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Person\Models;
+namespace App\Domain\Individual\Models;
 
 use Carbon\Carbon;
 
 /**
  * Physical person domain entity
  */
-class Person
+class Individual
 {
     private ?int $id = null;
     private string $firstName;
@@ -21,7 +21,7 @@ class Person
     private bool $isCompanyEmployee = false;
     private Carbon $createdAt;
     private int $creatorId;
-    
+
     public function __construct(
         string $firstName,
         string $lastName,
@@ -42,22 +42,22 @@ class Person
         $this->isCompanyEmployee = $isCompanyEmployee;
         $this->createdAt = Carbon::now();
     }
-    
+
     public function getId(): ?int
     {
         return $this->id;
     }
-    
+
     public function setId(int $id): void
     {
         $this->id = $id;
     }
-    
+
     public function getFirstName(): string
     {
         return $this->firstName;
     }
-    
+
     public function setFirstName(string $firstName): void
     {
         if (empty(trim($firstName)) || strlen($firstName) > 20) {
@@ -65,12 +65,12 @@ class Person
         }
         $this->firstName = trim($firstName);
     }
-    
+
     public function getLastName(): string
     {
         return $this->lastName;
     }
-    
+
     public function setLastName(string $lastName): void
     {
         if (empty(trim($lastName)) || strlen($lastName) > 20) {
@@ -78,12 +78,12 @@ class Person
         }
         $this->lastName = trim($lastName);
     }
-    
+
     public function getMiddleName(): string
     {
         return $this->middleName;
     }
-    
+
     public function setMiddleName(string $middleName): void
     {
         if (empty(trim($middleName)) || strlen($middleName) > 20) {
@@ -91,42 +91,42 @@ class Person
         }
         $this->middleName = trim($middleName);
     }
-    
+
     public function getFullName(): string
     {
         return "{$this->lastName} {$this->firstName} {$this->middleName}";
     }
-    
+
     public function getShortName(): string
     {
         return "{$this->lastName} {$this->firstName[0]}.{$this->middleName[0]}.";
     }
-    
+
     public function getPositionId(): ?int
     {
         return $this->positionId;
     }
-    
+
     public function setPositionId(?int $positionId): void
     {
         $this->positionId = $positionId;
     }
-    
+
     public function getStatusId(): int
     {
         return $this->statusId;
     }
-    
+
     public function setStatusId(int $statusId): void
     {
         $this->statusId = $statusId;
     }
-    
+
     public function getLogin(): ?string
     {
         return $this->login;
     }
-    
+
     public function setLogin(?string $login): void
     {
         if ($login !== null && strlen($login) < 6) {
@@ -134,42 +134,42 @@ class Person
         }
         $this->login = $login;
     }
-    
+
     public function isCompanyEmployee(): bool
     {
         return $this->isCompanyEmployee;
     }
-    
+
     public function setIsCompanyEmployee(bool $isCompanyEmployee): void
     {
         $this->isCompanyEmployee = $isCompanyEmployee;
     }
-    
+
     public function getCreatedAt(): Carbon
     {
         return $this->createdAt;
     }
-    
+
     public function setCreatedAt(Carbon $createdAt): void
     {
         $this->createdAt = $createdAt;
     }
-    
+
     public function getCreatorId(): int
     {
         return $this->creatorId;
     }
-    
+
     public function setCreatorId(int $creatorId): void
     {
         $this->creatorId = $creatorId;
     }
-    
+
     public function hasLogin(): bool
     {
         return !empty($this->login);
     }
-    
+
     public function canAccessSystem(): bool
     {
         return $this->hasLogin() && $this->isCompanyEmployee;

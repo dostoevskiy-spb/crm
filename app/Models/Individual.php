@@ -10,7 +10,37 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Person extends Model
+/**
+ * Individual (Physical Person) Model
+ * 
+ * @property int $id
+ * @property string $first_name
+ * @property string $last_name
+ * @property string $middle_name
+ * @property int|null $position_id
+ * @property int $status_id
+ * @property string|null $login
+ * @property bool $is_company_employee
+ * @property int $creator_id
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ * 
+ * // Computed attributes
+ * @property-read string $full_name
+ * @property-read string $short_name
+ * 
+ * // Relationships
+ * @property-read Individual $creator
+ * @property-read \Illuminate\Database\Eloquent\Collection|Individual[] $createdPersons
+ * 
+ * // Scopes
+ * @method static \Illuminate\Database\Eloquent\Builder|Individual companyEmployees()
+ * @method static \Illuminate\Database\Eloquent\Builder|Individual byStatus(int $statusId)
+ * @method static \Illuminate\Database\Eloquent\Builder|Individual byCreator(int $creatorId)
+ * @method static \Illuminate\Database\Eloquent\Builder|Individual withLogin()
+ * @method static \Illuminate\Database\Eloquent\Builder|Individual search(string $search)
+ */
+class Individual extends Model
 {
     use HasFactory;
 
@@ -36,12 +66,12 @@ class Person extends Model
     // Relationships
     public function creator(): BelongsTo
     {
-        return $this->belongsTo(Person::class, 'creator_id');
+        return $this->belongsTo(Individual::class, 'creator_id');
     }
 
     public function createdPersons(): HasMany
     {
-        return $this->hasMany(Person::class, 'creator_id');
+        return $this->hasMany(Individual::class, 'creator_id');
     }
 
     // Future relationships (will be uncommented when related models are created)

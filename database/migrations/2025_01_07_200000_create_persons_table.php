@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('persons', function (Blueprint $table) {
+        Schema::create('individual', function (Blueprint $table) {
             $table->id();
             $table->string('first_name', 20);
             $table->string('last_name', 20);
@@ -34,7 +34,7 @@ return new class extends Migration
             // Foreign keys will be added when related tables are created
             // $table->foreign('position_id')->references('id')->on('positions')->onDelete('set null');
             // $table->foreign('status_id')->references('id')->on('statuses')->onDelete('restrict');
-            // $table->foreign('creator_id')->references('id')->on('persons')->onDelete('restrict');
+            // $table->foreign('creator_id')->references('id')->on('individual')->onDelete('restrict');
         });
     }
 
@@ -43,6 +43,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('persons');
+        Schema::dropIfExists('individual');
     }
 };

@@ -1,20 +1,16 @@
 services:
-  # Nginx - веб-сервер с проксированием запросов /api на PHP-сервис
+  # Nginx - веб-сервер с проксированием запросов /api в Laravel backend
   nginx:
     image: nginx:alpine
     restart: unless-stopped
     volumes:
       - ./conf.d:/etc/nginx/conf.d
-      - ./templates:/etc/nginx/templates
-      - ./../../public:/var/www/public
+      - ./../../:/var/www
     ports:
       - "${NGINX_PORT:-80}:80"
     depends_on:
       - api
-      - frontend
     environment:
       - NGINX_HOST=${NGINX_HOST:-localhost}
-      - API_HOST=api
-      - API_PORT=8000
     networks:
       - crm_network

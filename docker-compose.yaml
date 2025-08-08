@@ -1,15 +1,14 @@
-docker-name: omni-crm
-
 include:
   # middleware
-  - path: compose.d/rabbitmq/compose.yaml
+  - path: compose.d/docker-hoster/compose.yaml
+#  - path: compose.d/rabbitmq/compose.yaml
   # databases
   - path: compose.d/postgres/compose.yaml
   # infrastructure systems
-  - path: compose.d/mailcatcher/compose.yaml
+  - path: compose.d/nginx/compose.yaml
+#  - path: compose.d/mailcatcher/compose.yaml
   # applications
   - path: compose.d/backend/compose.yaml
-  - path: compose.d/frontend/compose.yaml
 
 networks:
   crm_network:

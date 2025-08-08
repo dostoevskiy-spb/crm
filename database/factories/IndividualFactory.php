@@ -2,12 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\Person;
+use App\Domain\Individual\Models\Individual;
+use App\Models\Individual;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class PersonFactory extends Factory
+class IndividualFactory extends Factory
 {
-    protected $model = Person::class;
+    protected $model = Individual::class;
 
     public function definition(): array
     {

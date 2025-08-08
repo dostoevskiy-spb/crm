@@ -1,0 +1,6 @@
+services:
+  docker-hoster:
+    image: registry.bringo.tel/bringo/common/docker/docker-hoster-mac
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+      - /etc/hosts:/tmp/hosts
