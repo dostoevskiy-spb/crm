@@ -28,7 +28,7 @@ app/
       Model/
         Entity/
         ValueObject/
-        Enum/
+        Enum/``
         Event/
         Exception/
         Service/            # Domain Services (pure)

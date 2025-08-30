@@ -14,6 +14,8 @@ servers:
 tags:
   - name: Legal Entity
     description: Управление юридическими лицами
+  - name: Product
+    description: Управление продуктами и услугами
 paths:
   /api/legal-entities:
     get:
@@ -57,6 +59,149 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/LegalEntityListItem'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/products:
+    get:
+      tags: [Product]
+      summary: Список продуктов
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+          description: Фильтр по наименованию (LIKE)
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [active, inactive]
+          description: Фильтр по состоянию
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [item, service]
+          description: Фильтр по типу
+        - in: query
+          name: unit
+          schema:
+            type: string
+          description: Фильтр по единице измерения (точное совпадение)
+        - in: query
+          name: group
+          schema:
+            type: string
+          description: Фильтр по группе
+        - in: query
+          name: subgroup
+          schema:
+            type: string
+          description: Фильтр по подгруппе
+        - in: query
+          name: code1c
+          schema:
+            type: string
+          description: Фильтр по коду 1С
+        - in: query
+          name: sku
+          schema:
+            type: string
+          description: Фильтр по артикулу (SKU)
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductListItem'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags: [Product]
+      summary: Создать продукт
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductRequest'
+            examples:
+              default:
+                value:
+                  name: GPS-трекер
+                  status: active
+                  type: item
+                  unit: шт.
+                  sku: GPS-123
+                  groupName: Оборудование
+                  subgroupName: Трекеры
+                  code1c: 'A1B2C3'
+                  salePrice: '5990.00'
+      responses:
+        '201':
+          description: Создано
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uid:
+                    type: string
+                    format: uuid
+                required: [uid]
+        '400':
+          description: Ошибка валидации/бизнес-правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/products/{uid}:
+    get:
+      tags: [Product]
+      summary: Получить продукт по UID
+      parameters:
+        - in: path
+          name: uid
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Некорректный UID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Внутренняя ошибка
           content:
@@ -256,6 +401,138 @@ components:
           format: uuid
           nullable: true
       required: [uid, shortName, fullName, ogrn, inn, kpp, createdAt]
+    CreateProductRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 50
+          description: Наименование
+        status:
+          type: string
+          enum: [active, inactive]
+          description: Состояние
+        type:
+          type: string
+          enum: [item, service]
+          description: Тип
+        unit:
+          type: string
+          minLength: 1
+          maxLength: 20
+          description: Единица измерения
+        sku:
+          type: string
+          minLength: 1
+          maxLength: 50
+          description: Артикул
+        groupName:
+          type: string
+          maxLength: 50
+          nullable: true
+        subgroupName:
+          type: string
+          maxLength: 50
+          nullable: true
+        code1c:
+          type: string
+          maxLength: 50
+          nullable: true
+        salePrice:
+          type: string
+          pattern: '^\d+\.?\d{0,2}$'
+          nullable: true
+        creatorUid:
+          type: string
+          format: uuid
+          nullable: true
+      required: [name, status, type, unit, sku]
+    ProductListItem:
+      type: object
+      properties:
+        uid:
+          type: string
+          format: uuid
+        name:
+          type: string
+        status:
+          type: string
+        type:
+          type: string
+        unit:
+          type: string
+        groupName:
+          type: string
+          nullable: true
+        subgroupName:
+          type: string
+          nullable: true
+        code1c:
+          type: string
+          nullable: true
+        sku:
+          type: string
+        salePrice:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          description: 'Формат: YYYY-MM-DD HH:MM:SS'
+        creatorUid:
+          type: string
+          format: uuid
+          nullable: true
+      required: [uid, name, status, type, unit]
+    Product:
+      type: object
+      properties:
+        uid:
+          type: string
+          format: uuid
+        name:
+          type: string
+        status:
+          type: string
+        type:
+          type: string
+        unit:
+          type: string
+        groupName:
+          type: string
+          nullable: true
+        subgroupName:
+          type: string
+          nullable: true
+        code1c:
+          type: string
+          nullable: true
+        sku:
+          type: string
+        salePrice:
+          type: string
+          nullable: true
+        avgPurchaseCostYear:
+          type: string
+          nullable: true
+        lastPurchaseCost:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          description: 'Формат: YYYY-MM-DD HH:MM:SS'
+        creatorUid:
+          type: string
+          format: uuid
+          nullable: true
+        updatedAt:
+          type: string
+          nullable: true
+        updatedByUid:
+          type: string
+          format: uuid
+          nullable: true
+      required: [uid, name, status, type, unit, createdAt]
     ErrorResponse:
       type: object
       properties:

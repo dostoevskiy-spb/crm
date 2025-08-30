@@ -12,6 +12,7 @@ use App\Domain\Individual\ValueObjects\PersonStatus;
 use App\Domain\Individual\ValueObjects\PersonUid;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class IndividualControllerTest extends TestCase
 {
@@ -125,11 +126,7 @@ class IndividualControllerTest extends TestCase
                  ]);
     }
 
-    /**
-     * @group utf8
-     * This test validates UTF-8/Cyrillic support but may fail with SQLite in test environment.
-     * It should pass with PostgreSQL/MySQL in production.
-     */
+    #[Group('utf8')]
     public function test_create_individual_with_actual_cyrillic_names(): void
     {
         $data = [
