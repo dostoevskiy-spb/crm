@@ -1,0 +1,9 @@
+{
+  "first_name": "Алексей",
+  "last_name": "Петров",
+  "middle_name": "Сергеевич",
+  "status_id": 1,
+  "position_id": 1,
+  "login": "alexey999",
+  "is_company_employee": true
+}

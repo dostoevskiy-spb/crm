@@ -6,6 +6,10 @@ namespace App\Infrastructure\Person;
 
 use App\Domain\Individual\Contracts\IndividualRepositoryInterface;
 use App\Domain\Individual\Models\Individual as DomainIndividual;
+use App\Domain\Individual\ValueObjects\Login;
+use App\Domain\Individual\ValueObjects\Name;
+use App\Domain\Individual\ValueObjects\PersonStatus;
+use App\Domain\Individual\ValueObjects\PersonUid;
 use App\Models\Individual as EloquentIndividual;
 use Carbon\Carbon;
 
@@ -13,16 +17,20 @@ class EloquentIndividualRepository implements IndividualRepositoryInterface
 {
     private string $modelClass = EloquentIndividual::class;
 
-    public function findById(int $id): ?DomainIndividual
+    public function findByUid(PersonUid $uid): ?DomainIndividual
     {
-        $eloquentPerson = $this->modelClass::find($id);
+        $eloquentPerson = $this->modelClass::query()->where('uid', $uid->value())->first();
 
         return $eloquentPerson ? $this->toDomainModel($eloquentPerson) : null;
     }
 
-    public function findByLogin(string $login): ?DomainIndividual
+    public function findByLogin(Login $login): ?DomainIndividual
     {
-        $eloquentPerson = $this->modelClass::where('login', $login)->first();
+        $value = $login->value();
+        if ($value === null) {
+            return null;
+        }
+        $eloquentPerson = $this->modelClass::where('login', $value)->first();
 
         return $eloquentPerson ? $this->toDomainModel($eloquentPerson) : null;
     }
@@ -51,8 +59,8 @@ class EloquentIndividualRepository implements IndividualRepositoryInterface
             $query->where('status_id', $filters['status_id']);
         }
 
-        if (isset($filters['creator_id'])) {
-            $query->where('creator_id', $filters['creator_id']);
+        if (isset($filters['creator_uid'])) {
+            $query->where('creator_uid', $filters['creator_uid']);
         }
 
         if (isset($filters['is_company_employee'])) {
@@ -74,48 +82,42 @@ class EloquentIndividualRepository implements IndividualRepositoryInterface
 
     public function save(DomainIndividual $person): DomainIndividual
     {
-        $eloquentPerson = $person->getId()
-            ? $this->modelClass::find($person->getId())
-            : new $this->modelClass();
-
+        $eloquentPerson = $this->modelClass::query()->where('uid', $person->uid()->value())->first();
         if (!$eloquentPerson) {
-            throw new \RuntimeException("Person with ID {$person->getId()} not found");
+            $eloquentPerson = new $this->modelClass();
+            $eloquentPerson->uid = $person->uid()->value();
         }
 
         $eloquentPerson->fill([
-            'first_name' => $person->getFirstName(),
-            'last_name' => $person->getLastName(),
-            'middle_name' => $person->getMiddleName(),
-            'position_id' => $person->getPositionId(),
-            'status_id' => $person->getStatusId(),
-            'login' => $person->getLogin(),
+            'first_name' => $person->name()->first(),
+            'last_name' => $person->name()->last(),
+            'middle_name' => $person->name()->middle(),
+            'position_id' => $person->positionId(),
+            'status_id' => $person->status()->value(),
+            'login' => $person->login()->value(),
             'is_company_employee' => $person->isCompanyEmployee(),
-            'creator_id' => $person->getCreatorId(),
+            'creator_uid' => $person->creatorUid() ? $person->creatorUid()->value() : null,
         ]);
-
-        if (!$person->getId()) {
-            $eloquentPerson->created_at = $person->getCreatedAt();
-        }
+        $eloquentPerson->created_at = $person->createdAt();
 
         $eloquentPerson->save();
-
-        if (!$person->getId()) {
-            $person->setId($eloquentPerson->id);
-        }
-
         return $person;
     }
 
-    public function delete(int $id): bool
+    public function delete(PersonUid $uid): bool
     {
-        $eloquentPerson = $this->modelClass::find($id);
+        $eloquentPerson = $this->modelClass::query()->where('uid', $uid->value())->first();
 
         return $eloquentPerson ? $eloquentPerson->delete() : false;
     }
 
-    public function existsByLogin(string $login): bool
+    public function existsByLogin(Login $login): bool
     {
-        return $this->modelClass::where('login', $login)->exists();
+        $value = $login->value();
+        if ($value === null) {
+            return false;
+        }
+        return $this->modelClass::where('login', $value)->exists();
     }
 
     public function findCompanyEmployees(): array
@@ -125,16 +127,16 @@ class EloquentIndividualRepository implements IndividualRepositoryInterface
         return $eloquentPersons->map(fn($person) => $this->toDomainModel($person))->toArray();
     }
 
-    public function findByCreator(int $creatorId): array
+    public function findByCreator(PersonUid $creatorUid): array
     {
-        $eloquentPersons = $this->modelClass::byCreator($creatorId)->get();
+        $eloquentPersons = $this->modelClass::byCreator($creatorUid->value())->get();
 
         return $eloquentPersons->map(fn($person) => $this->toDomainModel($person))->toArray();
     }
 
-    public function findByStatus(int $statusId): array
+    public function findByStatus(PersonStatus $status): array
     {
-        $eloquentPersons = $this->modelClass::byStatus($statusId)->get();
+        $eloquentPersons = $this->modelClass::byStatus($status->value())->get();
 
         return $eloquentPersons->map(fn($person) => $this->toDomainModel($person))->toArray();
     }
@@ -142,17 +144,19 @@ class EloquentIndividualRepository implements IndividualRepositoryInterface
     private function toDomainModel(EloquentIndividual $eloquentIndividual): DomainIndividual
     {
         $domainPerson = new DomainIndividual(
-            firstName: $eloquentIndividual->first_name,
-            lastName: $eloquentIndividual->last_name,
-            middleName: $eloquentIndividual->middle_name,
-            statusId: $eloquentIndividual->status_id,
-            creatorId: $eloquentIndividual->creator_id,
+            name: new Name(
+                $eloquentIndividual->first_name,
+                $eloquentIndividual->last_name,
+                $eloquentIndividual->middle_name
+            ),
+            status: new PersonStatus($eloquentIndividual->status_id),
+            creatorUid: $eloquentIndividual->creator_uid ? new PersonUid((string) $eloquentIndividual->creator_uid) : null,
             positionId: $eloquentIndividual->position_id,
-            login: $eloquentIndividual->login,
-            isCompanyEmployee: $eloquentIndividual->is_company_employee
+            login: new Login($eloquentIndividual->login),
+            isCompanyEmployee: (bool) $eloquentIndividual->is_company_employee,
+            uid: new PersonUid((string) $eloquentIndividual->uid)
         );
 
-        $domainPerson->setId($eloquentIndividual->id);
         $domainPerson->setCreatedAt(Carbon::parse($eloquentIndividual->created_at));
 
         return $domainPerson;

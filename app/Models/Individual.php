@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * Individual (Physical Person) Model
  * 
- * @property int $id
+ * @property string $uid
  * @property string $first_name
  * @property string $last_name
  * @property string $middle_name
@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $status_id
  * @property string|null $login
  * @property bool $is_company_employee
- * @property int $creator_id
+ * @property string|null $creator_uid
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
  * 
@@ -30,7 +30,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read string $short_name
  * 
  * // Relationships
- * @property-read Individual $creator
+ * @property-read Individual|null $creator
  * @property-read \Illuminate\Database\Eloquent\Collection|Individual[] $createdPersons
  * 
  * // Scopes
@@ -44,9 +44,14 @@ class Individual extends Model
 {
     use HasFactory;
 
-    protected $table = 'persons';
+    protected $table = 'individual';
+
+    protected $primaryKey = 'uid';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
+        'uid',
         'first_name',
         'last_name',
         'middle_name',
@@ -54,7 +59,7 @@ class Individual extends Model
         'status_id',
         'login',
         'is_company_employee',
-        'creator_id',
+        'creator_uid',
     ];
 
     protected $casts = [
@@ -66,12 +71,12 @@ class Individual extends Model
     // Relationships
     public function creator(): BelongsTo
     {
-        return $this->belongsTo(Individual::class, 'creator_id');
+        return $this->belongsTo(Individual::class, 'creator_uid', 'uid');
     }
 
     public function createdPersons(): HasMany
     {
-        return $this->hasMany(Individual::class, 'creator_id');
+        return $this->hasMany(Individual::class, 'creator_uid', 'uid');
     }
 
     // Future relationships (will be uncommented when related models are created)
@@ -158,9 +163,9 @@ class Individual extends Model
         return $query->where('status_id', $statusId);
     }
 
-    public function scopeByCreator($query, int $creatorId)
+    public function scopeByCreator($query, string $creatorUid)
     {
-        return $query->where('creator_id', $creatorId);
+        return $query->where('creator_uid', $creatorUid);
     }
 
     public function scopeWithLogin($query)

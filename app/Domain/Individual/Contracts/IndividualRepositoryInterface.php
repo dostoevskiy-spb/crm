@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App\Domain\Individual\Contracts;
 
 use App\Domain\Individual\Models\Individual;
+use App\Domain\Individual\ValueObjects\Login;
+use App\Domain\Individual\ValueObjects\PersonStatus;
+use App\Domain\Individual\ValueObjects\PersonUid;
 
 interface IndividualRepositoryInterface
 {
-    public function findById(int $id): ?Individual;
+    public function findByUid(PersonUid $uid): ?Individual;
 
-    public function findByLogin(string $login): ?Individual;
+    public function findByLogin(Login $login): ?Individual;
 
     public function findAll(): array;
 
@@ -18,13 +21,13 @@ interface IndividualRepositoryInterface
 
     public function save(Individual $person): Individual;
 
-    public function delete(int $id): bool;
+    public function delete(PersonUid $uid): bool;
 
-    public function existsByLogin(string $login): bool;
+    public function existsByLogin(Login $login): bool;
 
     public function findCompanyEmployees(): array;
 
-    public function findByCreator(int $creatorId): array;
+    public function findByCreator(PersonUid $creatorUid): array;
 
-    public function findByStatus(int $statusId): array;
+    public function findByStatus(PersonStatus $status): array;
 }

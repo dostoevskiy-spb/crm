@@ -1,0 +1,550 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "CRM API Documentation",
+        "description": "API documentation for CRM system",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost",
+            "description": "Local development server"
+        }
+    ],
+    "paths": {
+        "/api/individuals": {
+            "get": {
+                "tags": [
+                    "Individuals"
+                ],
+                "summary": "Получить список физических лиц",
+                "description": "Получает список всех физических лиц с возможностью фильтрации",
+                "operationId": "9bf307f990a8c02bf228d4d957be2a49",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Поиск по имени, фамилии или отчеству",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Иван"
+                        }
+                    },
+                    {
+                        "name": "status_id",
+                        "in": "query",
+                        "description": "Фильтр по статусу",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "is_company_employee",
+                        "in": "query",
+                        "description": "Фильтр по сотрудникам компании",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean",
+                            "example": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Список физических лиц",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "first_name": {
+                                                        "type": "string",
+                                                        "example": "Иван"
+                                                    },
+                                                    "last_name": {
+                                                        "type": "string",
+                                                        "example": "Иванов"
+                                                    },
+                                                    "middle_name": {
+                                                        "type": "string",
+                                                        "example": "Иванович"
+                                                    },
+                                                    "full_name": {
+                                                        "type": "string",
+                                                        "example": "Иванов Иван Иванович"
+                                                    },
+                                                    "short_name": {
+                                                        "type": "string",
+                                                        "example": "Иванов И.И."
+                                                    },
+                                                    "status_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "position_id": {
+                                                        "type": "integer",
+                                                        "example": 1,
+                                                        "nullable": true
+                                                    },
+                                                    "login": {
+                                                        "type": "string",
+                                                        "example": "ivan123",
+                                                        "nullable": true
+                                                    },
+                                                    "is_company_employee": {
+                                                        "type": "boolean",
+                                                        "example": false
+                                                    },
+                                                    "creator_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2025-08-08T13:47:00Z"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Individuals"
+                ],
+                "summary": "Создать физическое лицо",
+                "description": "Создает новое физическое лицо в системе",
+                "operationId": "2c235c0baf6c7f6d4243449ed93f00b5",
+                "requestBody": {
+                    "description": "Данные для создания физического лица",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "first_name",
+                                    "last_name",
+                                    "middle_name",
+                                    "status_id"
+                                ],
+                                "properties": {
+                                    "first_name": {
+                                        "type": "string",
+                                        "maxLength": 20,
+                                        "example": "Иван"
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "maxLength": 20,
+                                        "example": "Иванов"
+                                    },
+                                    "middle_name": {
+                                        "type": "string",
+                                        "maxLength": 20,
+                                        "example": "Иванович"
+                                    },
+                                    "status_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "position_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "login": {
+                                        "type": "string",
+                                        "minLength": 6,
+                                        "example": "ivan123",
+                                        "nullable": true
+                                    },
+                                    "is_company_employee": {
+                                        "type": "boolean",
+                                        "example": false
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Физическое лицо успешно создано",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Физическое лицо успешно создано"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "first_name": {
+                                                    "type": "string",
+                                                    "example": "Иван"
+                                                },
+                                                "last_name": {
+                                                    "type": "string",
+                                                    "example": "Иванов"
+                                                },
+                                                "middle_name": {
+                                                    "type": "string",
+                                                    "example": "Иванович"
+                                                },
+                                                "full_name": {
+                                                    "type": "string",
+                                                    "example": "Иванов Иван Иванович"
+                                                },
+                                                "short_name": {
+                                                    "type": "string",
+                                                    "example": "Иванов И.И."
+                                                },
+                                                "status_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "position_id": {
+                                                    "type": "integer",
+                                                    "example": 1,
+                                                    "nullable": true
+                                                },
+                                                "login": {
+                                                    "type": "string",
+                                                    "example": "ivan123",
+                                                    "nullable": true
+                                                },
+                                                "is_company_employee": {
+                                                    "type": "boolean",
+                                                    "example": false
+                                                },
+                                                "creator_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2025-08-08T13:47:00Z"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ошибка валидации"
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "first_name": [
+                                                    "Имя обязательно для заполнения"
+                                                ],
+                                                "login": [
+                                                    "Такой логин уже существует"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка создания",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Login already exists"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/individuals/{id}": {
+            "get": {
+                "tags": [
+                    "Individuals"
+                ],
+                "summary": "Получить физическое лицо",
+                "description": "Получает данные физического лица по ID",
+                "operationId": "805a4615d1a3144e8fba1dd5e91bf0dd",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID физического лица",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Данные физического лица",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "first_name": {
+                                                    "type": "string",
+                                                    "example": "Иван"
+                                                },
+                                                "last_name": {
+                                                    "type": "string",
+                                                    "example": "Иванов"
+                                                },
+                                                "middle_name": {
+                                                    "type": "string",
+                                                    "example": "Иванович"
+                                                },
+                                                "full_name": {
+                                                    "type": "string",
+                                                    "example": "Иванов Иван Иванович"
+                                                },
+                                                "short_name": {
+                                                    "type": "string",
+                                                    "example": "Иванов И.И."
+                                                },
+                                                "status_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "position_id": {
+                                                    "type": "integer",
+                                                    "example": 1,
+                                                    "nullable": true
+                                                },
+                                                "login": {
+                                                    "type": "string",
+                                                    "example": "ivan123",
+                                                    "nullable": true
+                                                },
+                                                "is_company_employee": {
+                                                    "type": "boolean",
+                                                    "example": false
+                                                },
+                                                "creator_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2025-08-08T13:47:00Z"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Физическое лицо не найдено",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Физическое лицо не найдено"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/ping": {
+            "get": {
+                "tags": [
+                    "Ping"
+                ],
+                "summary": "Ping endpoint",
+                "description": "Simple ping endpoint that returns pong with timestamp",
+                "operationId": "77444a3f364c2052a2dc00dbb1eeac6a",
+                "responses": {
+                    "200": {
+                        "description": "Successful pong response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "pong"
+                                        },
+                                        "timestamp": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2025-08-08T10:29:29.543305Z"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Ping"
+                ],
+                "summary": "Ping endpoint with data",
+                "description": "Ping endpoint that accepts POST data and returns it along with pong response",
+                "operationId": "690c0234affbc872ac71238eafab542f",
+                "requestBody": {
+                    "description": "Optional JSON data to echo back",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "test": {
+                                        "type": "string",
+                                        "example": "data"
+                                    },
+                                    "custom_field": {
+                                        "type": "string",
+                                        "example": "custom_value"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful pong response with received data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "pong"
+                                        },
+                                        "received_data": {
+                                            "type": "object",
+                                            "example": {
+                                                "test": "data",
+                                                "custom_field": "custom_value"
+                                            }
+                                        },
+                                        "timestamp": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2025-08-08T10:30:33.919725Z"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Individuals",
+            "description": "API для управления физическими лицами"
+        },
+        {
+            "name": "Ping",
+            "description": "Test endpoints for API connectivity"
+        }
+    ]
+}

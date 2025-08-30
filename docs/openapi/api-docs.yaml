@@ -1,0 +1,264 @@
+openapi: 3.0.3
+info:
+  title: CRM API - Legal Entity
+  version: 1.0.0
+  description: |
+    OpenAPI спецификация для управления юридическими лицами (Legal Entity).
+    Содержит эндпоинты:
+    - POST /api/legal-entities — создание
+    - GET /api/legal-entities/{uid} — получение по UID
+    - GET /api/legal-entities — список с фильтрацией
+servers:
+  - url: /
+    description: Base path
+tags:
+  - name: Legal Entity
+    description: Управление юридическими лицами
+paths:
+  /api/legal-entities:
+    get:
+      tags: [Legal Entity]
+      summary: Список юридических лиц
+      parameters:
+        - in: query
+          name: shortName
+          schema:
+            type: string
+          description: Фильтр по краткому наименованию (LIKE)
+        - in: query
+          name: inn
+          schema:
+            type: string
+            pattern: '^\d{10}$'
+          description: Фильтр по ИНН (точное совпадение)
+        - in: query
+          name: phoneNumber
+          schema:
+            type: string
+          description: Фильтр по номеру телефона (LIKE)
+        - in: query
+          name: email
+          schema:
+            type: string
+            format: email
+          description: Фильтр по email (LIKE)
+        - in: query
+          name: curatorUid
+          schema:
+            type: string
+            format: uuid
+          description: Фильтр по UID куратора
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LegalEntityListItem'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags: [Legal Entity]
+      summary: Создать юридическое лицо
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateLegalEntityRequest'
+            examples:
+              default:
+                value:
+                  shortName: KVS
+                  fullName: KVS Systems LLC
+                  ogrn: '1234567890123'
+                  inn: '1234567890'
+                  kpp: '123456789'
+                  legalAddress: Saint-Petersburg
+                  phoneNumber: '+78120000000'
+                  email: office@example.com
+      responses:
+        '201':
+          description: Создано
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uid:
+                    type: string
+                    format: uuid
+                required: [uid]
+        '400':
+          description: Ошибка валидации/бизнес-правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/legal-entities/{uid}:
+    get:
+      tags: [Legal Entity]
+      summary: Получить юридическое лицо по UID
+      parameters:
+        - in: path
+          name: uid
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LegalEntity'
+        '400':
+          description: Некорректный UID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    CreateLegalEntityRequest:
+      type: object
+      properties:
+        shortName:
+          type: string
+          minLength: 1
+          maxLength: 20
+          description: Краткое наименование
+        fullName:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Полное наименование
+        ogrn:
+          type: string
+          pattern: '^\d{13}$'
+          description: ОГРН (13 цифр)
+        inn:
+          type: string
+          pattern: '^\d{10}$'
+          description: ИНН (10 цифр)
+        kpp:
+          type: string
+          pattern: '^\d{9}$'
+          description: КПП (9 цифр)
+        legalAddress:
+          type: string
+          nullable: true
+        phoneNumber:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+        creatorUid:
+          type: string
+          format: uuid
+          nullable: true
+      required: [shortName, fullName, ogrn, inn, kpp]
+    LegalEntityListItem:
+      type: object
+      properties:
+        uid:
+          type: string
+          format: uuid
+        shortName:
+          type: string
+        fullName:
+          type: string
+        inn:
+          type: string
+        phoneNumber:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+        createdAt:
+          type: string
+          description: 'Формат: YYYY-MM-DD HH:MM:SS'
+          example: '2025-08-28 12:34:56'
+        creatorUid:
+          type: string
+          format: uuid
+          nullable: true
+        curatorUid:
+          type: string
+          format: uuid
+          nullable: true
+      required: [uid, shortName, fullName, inn, createdAt]
+    LegalEntity:
+      type: object
+      properties:
+        uid:
+          type: string
+          format: uuid
+        shortName:
+          type: string
+        fullName:
+          type: string
+        ogrn:
+          type: string
+        inn:
+          type: string
+        kpp:
+          type: string
+        legalAddress:
+          type: string
+          nullable: true
+        phoneNumber:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+        createdAt:
+          type: string
+          description: 'Формат: YYYY-MM-DD HH:MM:SS'
+          example: '2025-08-28 12:34:56'
+        creatorUid:
+          type: string
+          format: uuid
+          nullable: true
+        curatorUid:
+          type: string
+          format: uuid
+          nullable: true
+      required: [uid, shortName, fullName, ogrn, inn, kpp, createdAt]
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required: [error]

@@ -1,21 +1,19 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\IndividualController;
+use App\Http\Controllers\Api\PingController;
+use App\Infrastructure\Http\Controller\LegalEntityController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/ping', function () {
-    return response()->json([
-        'message' => 'pong',
-        'timestamp' => now()->toISOString(),
-        'status' => 'success'
-    ]);
-});
+Route::get('/ping', [PingController::class, 'get']);
+Route::post('/ping', [PingController::class, 'post']);
 
-Route::post('/ping', function (Request $request) {
-    return response()->json([
-        'message' => 'pong',
-        'received_data' => $request->all(),
-        'timestamp' => now()->toISOString(),
-        'status' => 'success'
-    ]);
-});
+// Individuals API routes
+Route::get('/individuals', [IndividualController::class, 'index']);
+Route::post('/individuals', [IndividualController::class, 'store']);
+Route::get('/individuals/{uid}', [IndividualController::class, 'show'])->where('uid', '[0-9a-fA-F-]{36}');
+
+// Legal Entities API routes
+Route::get('/legal-entities', [LegalEntityController::class, 'index']);
+Route::post('/legal-entities', [LegalEntityController::class, 'store']);
+Route::get('/legal-entities/{uid}', [LegalEntityController::class, 'show'])->where('uid', '[0-9a-fA-F-]{36}');

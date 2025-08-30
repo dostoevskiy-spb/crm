@@ -48,6 +48,9 @@ RUN pecl install \
 # Note: mcrypt is deprecated since PHP 7.2, using sodium instead (built-in)
 # curl is already built-in in PHP 8.4
 
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
 # Copy custom PHP-FPM pool configuration
 COPY www.conf /usr/local/etc/php-fpm.d/
 

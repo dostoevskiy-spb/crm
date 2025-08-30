@@ -4,174 +4,152 @@ declare(strict_types=1);
 
 namespace App\Domain\Individual\Models;
 
+use App\Domain\Individual\Entities\ContactInfo;
+use App\Domain\Individual\ValueObjects\Login;
+use App\Domain\Individual\ValueObjects\Name;
+use App\Domain\Individual\ValueObjects\PersonStatus;
+use App\Domain\Individual\ValueObjects\PersonUid;
 use Carbon\Carbon;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Physical person domain entity
  */
+#[ORM\Entity]
+#[ORM\Table(name: 'individual')]
 class Individual
 {
-    private ?int $id = null;
-    private string $firstName;
-    private string $lastName;
-    private string $middleName;
+    #[ORM\Id]
+    #[ORM\Column(type: 'guid')]
+    private string $uid;
+
+    #[ORM\Embedded(class: Name::class, columnPrefix: false)]
+    private Name $name;
+
+    #[ORM\Column(name: 'position_id', type: 'integer', nullable: true)]
     private ?int $positionId = null;
+
+    #[ORM\Column(name: 'status_id', type: 'integer')]
     private int $statusId;
-    private ?string $login = null;
+
+    #[ORM\Column(name: 'login', type: 'string', length: 50, nullable: true)]
+    private ?string $loginValue = null;
+
+    #[ORM\Column(name: 'is_company_employee', type: 'boolean')]
     private bool $isCompanyEmployee = false;
-    private Carbon $createdAt;
-    private int $creatorId;
+
+    #[ORM\Column(name: 'created_at', type: 'datetime')]
+    private \DateTimeInterface $createdAt;
+
+    #[ORM\Column(name: 'creator_uid', type: 'guid', nullable: true)]
+    private ?string $creatorUid = null;
+    /** @var ContactInfo[] */
+    private array $contacts = [];
 
     public function __construct(
-        string $firstName,
-        string $lastName,
-        string $middleName,
-        int $statusId,
-        int $creatorId,
+        Name $name,
+        PersonStatus $status,
+        ?PersonUid $creatorUid = null,
         ?int $positionId = null,
-        ?string $login = null,
-        bool $isCompanyEmployee = false
+        ?Login $login = null,
+        bool $isCompanyEmployee = false,
+        ?PersonUid $uid = null
     ) {
-        $this->setFirstName($firstName);
-        $this->setLastName($lastName);
-        $this->setMiddleName($middleName);
-        $this->statusId = $statusId;
-        $this->creatorId = $creatorId;
+        $this->name = $name;
+        $this->statusId = $status->value();
+        $this->creatorUid = $creatorUid?->value();
         $this->positionId = $positionId;
-        $this->login = $login;
+        $this->loginValue = $login?->value();
         $this->isCompanyEmployee = $isCompanyEmployee;
         $this->createdAt = Carbon::now();
+        $this->uid = $uid?->value() ?? self::generateUuid();
     }
 
-    public function getId(): ?int
+    private static function generateUuid(): string
     {
-        return $this->id;
-    }
-
-    public function setId(int $id): void
-    {
-        $this->id = $id;
-    }
-
-    public function getFirstName(): string
-    {
-        return $this->firstName;
-    }
-
-    public function setFirstName(string $firstName): void
-    {
-        if (empty(trim($firstName)) || strlen($firstName) > 20) {
-            throw new \InvalidArgumentException('First name must be between 1 and 20 characters');
+        // Use PHP uuid generation via ramsey/uuid if available; fallback to random bytes
+        if (function_exists('uuid_create')) {
+            return (string) uuid_create(UUID_TYPE_RANDOM);
         }
-        $this->firstName = trim($firstName);
+        $data = random_bytes(16);
+        // Set version to 4
+        $data[6] = chr((ord($data[6]) & 0x0f) | 0x40);
+        // Set variant to RFC 4122
+        $data[8] = chr((ord($data[8]) & 0x3f) | 0x80);
+        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
     }
 
-    public function getLastName(): string
-    {
-        return $this->lastName;
-    }
-
-    public function setLastName(string $lastName): void
-    {
-        if (empty(trim($lastName)) || strlen($lastName) > 20) {
-            throw new \InvalidArgumentException('Last name must be between 1 and 20 characters');
+    public function uid(): PersonUid { return new PersonUid($this->uid); }
+    public function name(): Name { return $this->name; }
+    public function positionId(): ?int { return $this->positionId; }
+    public function status(): PersonStatus { return new PersonStatus($this->statusId); }
+    public function login(): Login { return new Login($this->loginValue); }
+    public function isCompanyEmployee(): bool { return $this->isCompanyEmployee; }
+    public function createdAt(): Carbon {
+        if ($this->createdAt instanceof Carbon) {
+            return $this->createdAt;
         }
-        $this->lastName = trim($lastName);
-    }
-
-    public function getMiddleName(): string
-    {
-        return $this->middleName;
-    }
-
-    public function setMiddleName(string $middleName): void
-    {
-        if (empty(trim($middleName)) || strlen($middleName) > 20) {
-            throw new \InvalidArgumentException('Middle name must be between 1 and 20 characters');
+        if ($this->createdAt instanceof \DateTimeImmutable) {
+            $mutable = \DateTime::createFromImmutable($this->createdAt);
+            return Carbon::instance($mutable);
         }
-        $this->middleName = trim($middleName);
+        return Carbon::instance($this->createdAt);
     }
+    public function creatorUid(): ?PersonUid { return $this->creatorUid ? new PersonUid($this->creatorUid) : null; }
 
-    public function getFullName(): string
-    {
-        return "{$this->lastName} {$this->firstName} {$this->middleName}";
-    }
+    public function setPositionId(?int $positionId): void { $this->positionId = $positionId; }
+    public function setStatus(PersonStatus $status): void { $this->statusId = $status->value(); }
+    public function setLogin(Login $login): void { $this->loginValue = $login->value(); }
+    public function setIsCompanyEmployee(bool $isCompanyEmployee): void { $this->isCompanyEmployee = $isCompanyEmployee; }
+    public function setCreatedAt(Carbon $createdAt): void { $this->createdAt = $createdAt; }
 
-    public function getShortName(): string
-    {
-        return "{$this->lastName} {$this->firstName[0]}.{$this->middleName[0]}.";
-    }
+    public function getFirstName(): string { return $this->name->first(); }
+    public function getLastName(): string { return $this->name->last(); }
+    public function getMiddleName(): string { return $this->name->middle(); }
+    public function getFullName(): string { return $this->name->full(); }
+    public function getShortName(): string { return $this->name->short(); }
+    public function hasLogin(): bool { return !(new Login($this->loginValue))->isEmpty(); }
+    public function getLogin(): ?string { return (new Login($this->loginValue))->value(); }
+    public function getStatusId(): int { return $this->statusId; }
 
-    public function getPositionId(): ?int
+    /**
+     * Contact management (in-aggregate, persistence TBD).
+     */
+    public function addContact(ContactInfo $contact): void
     {
-        return $this->positionId;
-    }
-
-    public function setPositionId(?int $positionId): void
-    {
-        $this->positionId = $positionId;
-    }
-
-    public function getStatusId(): int
-    {
-        return $this->statusId;
-    }
-
-    public function setStatusId(int $statusId): void
-    {
-        $this->statusId = $statusId;
-    }
-
-    public function getLogin(): ?string
-    {
-        return $this->login;
-    }
-
-    public function setLogin(?string $login): void
-    {
-        if ($login !== null && strlen($login) < 6) {
-            throw new \InvalidArgumentException('Login must be at least 6 characters long');
+        if ($contact->isPrimary()) {
+            foreach ($this->contacts as $c) {
+                if ($c->isPrimary()) {
+                    $c->markPrimary(false);
+                }
+            }
         }
-        $this->login = $login;
+        $this->contacts[] = $contact;
     }
 
-    public function isCompanyEmployee(): bool
+    /** @return ContactInfo[] */
+    public function contacts(): array
     {
-        return $this->isCompanyEmployee;
+        return $this->contacts;
     }
 
-    public function setIsCompanyEmployee(bool $isCompanyEmployee): void
+    public function primaryContact(): ?ContactInfo
     {
-        $this->isCompanyEmployee = $isCompanyEmployee;
+        foreach ($this->contacts as $c) {
+            if ($c->isPrimary()) {
+                return $c;
+            }
+        }
+        return null;
     }
 
-    public function getCreatedAt(): Carbon
+    public function setPrimaryContact(int $index): void
     {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(Carbon $createdAt): void
-    {
-        $this->createdAt = $createdAt;
-    }
-
-    public function getCreatorId(): int
-    {
-        return $this->creatorId;
-    }
-
-    public function setCreatorId(int $creatorId): void
-    {
-        $this->creatorId = $creatorId;
-    }
-
-    public function hasLogin(): bool
-    {
-        return !empty($this->login);
-    }
-
-    public function canAccessSystem(): bool
-    {
-        return $this->hasLogin() && $this->isCompanyEmployee;
+        if (!isset($this->contacts[$index])) {
+            throw new \OutOfBoundsException('Contact index out of bounds');
+        }
+        foreach ($this->contacts as $i => $c) {
+            $c->markPrimary($i === $index);
+        }
     }
 }
