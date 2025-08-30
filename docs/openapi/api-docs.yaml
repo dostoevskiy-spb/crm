@@ -16,6 +16,8 @@ tags:
     description: Управление юридическими лицами
   - name: Product
     description: Управление продуктами и услугами
+  - name: Equipment
+    description: Управление оборудованием
 paths:
   /api/legal-entities:
     get:
@@ -59,6 +61,96 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/LegalEntityListItem'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/equipment:
+    get:
+      tags: [Equipment]
+      summary: Список оборудования
+      parameters:
+        - in: query
+          name: uid
+          schema:
+            type: string
+            format: uuid
+          description: Фильтр по UID
+        - in: query
+          name: name
+          schema:
+            type: string
+          description: Фильтр по наименованию (LIKE)
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [warehouse, issued, installed, sold, reclamation, util, customer]
+          description: Фильтр по статусу
+        - in: query
+          name: transportUid
+          schema:
+            type: string
+            format: uuid
+          description: Фильтр по UID транспорта
+        - in: query
+          name: warehouse
+          schema:
+            type: string
+          description: Фильтр по складу (точное совпадение)
+        - in: query
+          name: issuedToUid
+          schema:
+            type: string
+            format: uuid
+          description: Фильтр по UID получателя (физлицо)
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EquipmentListItem'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/equipment/{uid}:
+    get:
+      tags: [Equipment]
+      summary: Получить оборудование по UID
+      parameters:
+        - in: path
+          name: uid
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Equipment'
+        '400':
+          description: Некорректный UID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Внутренняя ошибка
           content:
@@ -533,6 +625,109 @@ components:
           format: uuid
           nullable: true
       required: [uid, name, status, type, unit, createdAt]
+    EquipmentListItem:
+      type: object
+      properties:
+        uid:
+          type: string
+          format: uuid
+        name:
+          type: string
+        status:
+          type: string
+          enum: [warehouse, issued, installed, sold, reclamation, util, customer]
+        transportUid:
+          type: string
+          format: uuid
+          nullable: true
+        warehouse:
+          type: string
+          nullable: true
+        issuedToUid:
+          type: string
+          format: uuid
+          nullable: true
+        createdAt:
+          type: string
+          description: 'Формат: YYYY-MM-DD HH:MM:SS'
+        creatorUid:
+          type: string
+          format: uuid
+          nullable: true
+      required: [uid, name, status, createdAt]
+    Equipment:
+      type: object
+      properties:
+        uid:
+          type: string
+          format: uuid
+        name:
+          type: string
+        status:
+          type: string
+          enum: [warehouse, issued, installed, sold, reclamation, util, customer]
+        previousStatus:
+          type: string
+          enum: [warehouse, issued, installed, sold, reclamation, util, customer]
+          nullable: true
+        purchaseInvoiceUid:
+          type: string
+          format: uuid
+          nullable: true
+        supplierUid:
+          type: string
+          format: uuid
+          nullable: true
+        warehouse:
+          type: string
+          nullable: true
+        issuedToUid:
+          type: string
+          format: uuid
+          nullable: true
+        issueDocUid:
+          type: string
+          format: uuid
+          nullable: true
+        transportUid:
+          type: string
+          format: uuid
+          nullable: true
+        mountingDate:
+          type: string
+          format: date
+          nullable: true
+        shipmentInvoiceUid:
+          type: string
+          format: uuid
+          nullable: true
+        customerUid:
+          type: string
+          format: uuid
+          nullable: true
+        skziFrom:
+          type: string
+          format: date
+          nullable: true
+        skziTo:
+          type: string
+          format: date
+          nullable: true
+        createdAt:
+          type: string
+          description: 'Формат: YYYY-MM-DD HH:MM:SS'
+        creatorUid:
+          type: string
+          format: uuid
+          nullable: true
+        updatedAt:
+          type: string
+          nullable: true
+        updatedByUid:
+          type: string
+          format: uuid
+          nullable: true
+      required: [uid, name, status, createdAt]
     ErrorResponse:
       type: object
       properties:

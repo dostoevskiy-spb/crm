@@ -6,10 +6,12 @@ namespace App\Infrastructure\Providers;
 
 use App\Domain\Individual\Contracts\IndividualRepositoryInterface;
 use App\Domain\LegalEntity\Contracts\LegalEntityRepositoryInterface;
+use App\Domain\Equipment\Contracts\EquipmentRepositoryInterface;
 use App\Domain\Product\Contracts\ProductRepositoryInterface;
 use App\Infrastructure\Persistence\Doctrine\DoctrineFactory;
 use App\Infrastructure\Persistence\Doctrine\Repository\DoctrineIndividualRepository;
 use App\Infrastructure\Persistence\Doctrine\Repository\DoctrineLegalEntityRepository;
+use App\Infrastructure\Persistence\Doctrine\Repository\DoctrineEquipmentRepository;
 use App\Infrastructure\Persistence\Doctrine\Repository\DoctrineProductRepository;
 use App\Infrastructure\Persistence\Doctrine\Transactional;
 use Doctrine\ORM\EntityManagerInterface;
@@ -56,6 +58,8 @@ final class InfrastructureServiceProvider extends ServiceProvider
                 base_path('app/Domain/LegalEntity/ValueObjects'),
                 base_path('app/Domain/Product/Models'),
                 base_path('app/Domain/Product/ValueObjects'),
+                base_path('app/Domain/Equipment/Models'),
+                base_path('app/Domain/Equipment/ValueObjects'),
             ];
 
             $em = DoctrineFactory::create(
@@ -83,6 +87,7 @@ final class InfrastructureServiceProvider extends ServiceProvider
         $this->app->bind(LegalEntityRepositoryInterface::class, DoctrineLegalEntityRepository::class);
         $this->app->bind(IndividualRepositoryInterface::class, DoctrineIndividualRepository::class);
         $this->app->bind(ProductRepositoryInterface::class, DoctrineProductRepository::class);
+        $this->app->bind(EquipmentRepositoryInterface::class, DoctrineEquipmentRepository::class);
         $this->app->bind(Transactional::class);
     }
 }

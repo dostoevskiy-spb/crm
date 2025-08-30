@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Individual (Physical Person) Model
- * 
+ *
  * @property string $uid
  * @property string $first_name
  * @property string $last_name
@@ -24,15 +24,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $creator_uid
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
- * 
+ *
  * // Computed attributes
  * @property-read string $full_name
  * @property-read string $short_name
- * 
+ *
  * // Relationships
  * @property-read Individual|null $creator
  * @property-read \Illuminate\Database\Eloquent\Collection|Individual[] $createdPersons
- * 
+ *
  * // Scopes
  * @method static \Illuminate\Database\Eloquent\Builder|Individual companyEmployees()
  * @method static \Illuminate\Database\Eloquent\Builder|Individual byStatus(int $statusId)
