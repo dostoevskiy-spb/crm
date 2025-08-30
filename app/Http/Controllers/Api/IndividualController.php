@@ -4,7 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
-use App\Domain\Individual\Services\IndividualService;
+use App\Application\Individual\Command\CreateIndividualCommand;
+use App\Application\Individual\DTO\CreateIndividualDTO;
+use App\Application\Individual\Handler\CreateIndividualHandler;
+use App\Application\Individual\Handler\GetIndividualHandler;
+use App\Application\Individual\Handler\GetIndividualsHandler;
+use App\Application\Individual\Query\GetIndividualQuery;
+use App\Application\Individual\Query\GetIndividualsQuery;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\CreateIndividualRequest;
 use Illuminate\Http\JsonResponse;
@@ -14,12 +20,7 @@ use OpenApi\Attributes as OA;
 #[OA\Tag(name: 'Individuals', description: 'API для управления физическими лицами')]
 class IndividualController extends Controller
 {
-    private IndividualService $individualService;
-
-    public function __construct(IndividualService $individualService)
-    {
-        $this->individualService = $individualService;
-    }
+    
 
     #[OA\Post(
         path: '/api/individuals',
@@ -101,32 +102,32 @@ class IndividualController extends Controller
             )
         ]
     )]
-    public function store(CreateIndividualRequest $request): JsonResponse
+    public function store(
+        CreateIndividualRequest $request,
+        CreateIndividualHandler $createHandler,
+        GetIndividualHandler $getHandler
+    ): JsonResponse
     {
         try {
             $data = $request->validated();
-            // TODO: получить creator_uid из контекста авторизации; пока опционально
-            $data['creator_uid'] = $data['creator_uid'] ?? null;
-            
-            $individual = $this->individualService->create($data);
+            $dto = new CreateIndividualDTO(
+                firstName: (string) $data['first_name'],
+                lastName: (string) $data['last_name'],
+                middleName: (string) $data['middle_name'],
+                statusId: (int) $data['status_id'],
+                positionId: $data['position_id'] ?? null,
+                login: $data['login'] ?? null,
+                isCompanyEmployee: (bool) ($data['is_company_employee'] ?? false),
+                creatorUid: $data['creator_uid'] ?? null,
+            );
+
+            $uid = $createHandler(new CreateIndividualCommand($dto));
+            $result = $getHandler(new GetIndividualQuery($uid));
 
             return response()->json([
                 'status' => 'success',
                 'message' => 'Физическое лицо успешно создано',
-                'data' => [
-                    'uid' => $individual->uid()->value(),
-                    'first_name' => $individual->getFirstName(),
-                    'last_name' => $individual->getLastName(),
-                    'middle_name' => $individual->getMiddleName(),
-                    'full_name' => $individual->getFullName(),
-                    'short_name' => $individual->getShortName(),
-                    'status_id' => $individual->getStatusId(),
-                    'position_id' => $individual->positionId(),
-                    'login' => $individual->getLogin(),
-                    'is_company_employee' => $individual->isCompanyEmployee(),
-                    'creator_uid' => $individual->creatorUid()?->value(),
-                    'created_at' => $individual->createdAt()->toISOString(),
-                ]
+                'data' => $result,
             ], 201, ['Content-Type' => 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE);
         } catch (\InvalidArgumentException $e) {
             return response()->json([
@@ -195,11 +196,11 @@ class IndividualController extends Controller
             )
         ]
     )]
-    public function show(string $uid): JsonResponse
+    public function show(string $uid, GetIndividualHandler $handler): JsonResponse
     {
-        $individual = $this->individualService->findByUid($uid);
+        $result = $handler(new GetIndividualQuery($uid));
 
-        if (!$individual) {
+        if (!$result) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Физическое лицо не найдено'
@@ -208,20 +209,7 @@ class IndividualController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => [
-                'uid' => $individual->uid()->value(),
-                'first_name' => $individual->getFirstName(),
-                'last_name' => $individual->getLastName(),
-                'middle_name' => $individual->getMiddleName(),
-                'full_name' => $individual->getFullName(),
-                'short_name' => $individual->getShortName(),
-                'status_id' => $individual->getStatusId(),
-                'position_id' => $individual->positionId(),
-                'login' => $individual->getLogin(),
-                'is_company_employee' => $individual->isCompanyEmployee(),
-                'creator_uid' => $individual->creatorUid()?->value(),
-                'created_at' => $individual->createdAt()->toISOString(),
-            ]
+            'data' => $result
         ], 200, ['Content-Type' => 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE);
     }
 
@@ -286,7 +274,7 @@ class IndividualController extends Controller
             )
         ]
     )]
-    public function index(Request $request): JsonResponse
+    public function index(Request $request, GetIndividualsHandler $handler): JsonResponse
     {
         $filters = array_filter([
             'search' => $request->query('search'),
@@ -296,26 +284,7 @@ class IndividualController extends Controller
                 : null,
         ], fn($value) => $value !== null);
 
-        $individuals = empty($filters) 
-            ? $this->individualService->findAll()
-            : $this->individualService->findByFilters($filters);
-
-        $data = array_map(function($individual) {
-            return [
-                'uid' => $individual->uid()->value(),
-                'first_name' => $individual->getFirstName(),
-                'last_name' => $individual->getLastName(),
-                'middle_name' => $individual->getMiddleName(),
-                'full_name' => $individual->getFullName(),
-                'short_name' => $individual->getShortName(),
-                'status_id' => $individual->getStatusId(),
-                'position_id' => $individual->positionId(),
-                'login' => $individual->getLogin(),
-                'is_company_employee' => $individual->isCompanyEmployee(),
-                'creator_uid' => $individual->creatorUid()?->value(),
-                'created_at' => $individual->createdAt()->toISOString(),
-            ];
-        }, $individuals);
+        $data = $handler(new GetIndividualsQuery($filters));
 
         return response()->json([
             'status' => 'success',

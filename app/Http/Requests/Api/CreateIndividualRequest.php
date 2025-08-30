@@ -21,7 +21,7 @@ class CreateIndividualRequest extends FormRequest
             'middle_name' => 'required|string|min:1|max:20',
             'status_id' => 'required|integer|min:1',
             'position_id' => 'nullable|integer|min:1',
-            'login' => 'nullable|string|min:6|unique:individual,login',
+            'login' => 'nullable|string|min:6',
             'is_company_employee' => 'boolean',
         ];
     }
@@ -44,7 +44,6 @@ class CreateIndividualRequest extends FormRequest
             'position_id.integer' => 'Должность должна быть числом',
             'position_id.min' => 'Некорректная должность',
             'login.min' => 'Логин должен содержать минимум 6 символов',
-            'login.unique' => 'Такой логин уже существует',
             'is_company_employee.boolean' => 'Поле "Сотрудник компании" должно быть true или false',
         ];
     }
