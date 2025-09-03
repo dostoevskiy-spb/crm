@@ -426,11 +426,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use App\Domain\Catalog\Repository\ProductRepository;
-use App\Infrastructure\Persistence\Doctrine\Repository\DoctrineProductRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Infrastructure\Persistence\Doctrine\DoctrineFactory;
+use App\Domain\Catalog\Repository\ProductRepository;use App\Modules\Product\Infrastructure\Persistence\Doctrine\Repository\DoctrineProductRepository;use App\Modules\Shared\Infrastructure\Persistence\Doctrine\DoctrineFactory;use Doctrine\ORM\EntityManagerInterface;use Illuminate\Support\ServiceProvider;
 
 final class InfrastructureServiceProvider extends ServiceProvider
 {
@@ -634,8 +630,7 @@ final class InMemoryProductRepository implements ProductRepository
 
 ```php
 <?php
-use Illuminate\Support\Facades\Route;
-use App\Infrastructure\Http\Controller\ProductController;
+use App\Modules\Product\Infrastructure\Http\Controller\ProductController;use Illuminate\Support\Facades\Route;
 
 Route::post('/products', [ProductController::class, 'store']);
 Route::get('/products/{id}', function (string $id, \App\Application\Catalog\Handler\GetProductHandler $handler) {

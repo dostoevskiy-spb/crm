@@ -1,0 +1,41 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Modules\LegalEntity\Application\Handler;
+
+use App\Modules\LegalEntity\Application\Query\GetLegalEntityQuery;
+use App\Modules\LegalEntity\Domain\Contracts\LegalEntityRepositoryInterface;
+use App\Modules\LegalEntity\Domain\ValueObjects\Id;
+
+final class GetLegalEntityHandler
+{
+    public function __construct(
+        private LegalEntityRepositoryInterface $legalEntityRepository
+    ) {}
+
+    public function __invoke(GetLegalEntityQuery $query): ?array
+    {
+        $uid = new Id($query->uid);
+        $legalEntity = $this->legalEntityRepository->findByUid($uid);
+
+        if (! $legalEntity) {
+            return null;
+        }
+
+        return [
+            'uid' => $legalEntity->uid()->value(),
+            'shortName' => $legalEntity->name()->shortName(),
+            'fullName' => $legalEntity->name()->fullName(),
+            'ogrn' => $legalEntity->taxNumber()->ogrn(),
+            'inn' => $legalEntity->taxNumber()->inn(),
+            'kpp' => $legalEntity->taxNumber()->kpp(),
+            'legalAddress' => $legalEntity->legalAddress(),
+            'phoneNumber' => $legalEntity->phoneNumber(),
+            'email' => $legalEntity->email(),
+            'createdAt' => $legalEntity->createdAt()->format('Y-m-d H:i:s'),
+            'creatorUid' => $legalEntity->creatorUid()?->value(),
+            'curatorUid' => $legalEntity->curatorUid()?->value(),
+        ];
+    }
+}

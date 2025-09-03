@@ -1,10 +1,10 @@
 <?php
 
-use App\Http\Controllers\Api\IndividualController;
 use App\Http\Controllers\Api\PingController;
-use App\Infrastructure\Http\Controller\LegalEntityController;
-use App\Infrastructure\Http\Controller\ProductController;
-use App\Infrastructure\Http\Controller\EquipmentController;
+use App\Modules\Equipment\Infrastructure\Http\Controller\EquipmentController;
+use App\Modules\Individual\Infrastructure\Http\Controller\IndividualController;
+use App\Modules\LegalEntity\Infrastructure\Http\Controller\LegalEntityController;
+use App\Modules\Product\Infrastructure\Http\Controller\ProductController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/ping', [PingController::class, 'get']);

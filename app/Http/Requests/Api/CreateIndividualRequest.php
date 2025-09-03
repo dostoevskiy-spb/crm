@@ -19,7 +19,7 @@ class CreateIndividualRequest extends FormRequest
             'first_name' => 'required|string|min:1|max:20',
             'last_name' => 'required|string|min:1|max:20',
             'middle_name' => 'required|string|min:1|max:20',
-            'status_id' => 'required|integer|min:1',
+            'status' => 'required|string|in:active,archived',
             'position_id' => 'nullable|integer|min:1',
             'login' => 'nullable|string|min:6',
             'is_company_employee' => 'boolean',
@@ -38,9 +38,9 @@ class CreateIndividualRequest extends FormRequest
             'middle_name.required' => 'Отчество обязательно для заполнения',
             'middle_name.min' => 'Отчество должно содержать минимум 1 символ',
             'middle_name.max' => 'Отчество не может содержать более 20 символов',
-            'status_id.required' => 'Статус обязателен для заполнения',
-            'status_id.integer' => 'Статус должен быть числом',
-            'status_id.min' => 'Некорректный статус',
+            'status.required' => 'Статус обязателен для заполнения',
+            'status.string' => 'Статус должен быть строкой',
+            'status.in' => 'Статус должен быть одним из: active, archived',
             'position_id.integer' => 'Должность должна быть числом',
             'position_id.min' => 'Некорректная должность',
             'login.min' => 'Логин должен содержать минимум 6 символов',
@@ -48,3 +48,4 @@ class CreateIndividualRequest extends FormRequest
         ];
     }
 }
+

@@ -1,9 +1,16 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+    - vendor/nesbot/carbon/extension.neon
+
 parameters:
-  level: 8
-  paths:
-    - app
-    - tests
-  checkGenericClassInNonGenericObjectType: false
-  ignoreErrors:
-    - '#Call to an undefined method Laravel\\.*#'
-    - '#Call to an undefined method Illuminate\\.*#'
+    paths:
+        - app/
+        - tests/
+    # Level 10 is the highest level
+    level: 5
+#    ignoreErrors:
+#      - '#Call to an undefined method Laravel\\.*#'
+#      - '#Call to an undefined method Illuminate\\.*#'
+#      - '#PHPDoc tag @var#'
+    excludePaths:
+      - ./tests

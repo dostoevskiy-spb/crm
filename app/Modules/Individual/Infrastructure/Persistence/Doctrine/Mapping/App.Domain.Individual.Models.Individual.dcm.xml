@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping
+    xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Modules\Individual\Domain\Models\Individual" table="individual">
+        <id name="uid" type="guid" column="uid" />
+
+        <embedded name="name" class="App\Modules\Individual\Domain\ValueObjects\Name" column-prefix="false" />
+
+        <field name="positionId" type="integer" column="position_id" nullable="true" />
+        <field name="status" type="individual_status" column="status" />
+        <field name="loginValue" type="string" length="50" column="login" nullable="true" />
+        <field name="isCompanyEmployee" type="boolean" column="is_company_employee" />
+
+        <field name="createdAt" type="datetime" column="created_at" />
+        <field name="creatorUid" type="guid" column="creator_uid" nullable="true" />
+    </entity>
+</doctrine-mapping>

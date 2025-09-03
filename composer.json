@@ -13,27 +13,35 @@
         "darkaonline/l5-swagger": "^9.0",
         "doctrine/dbal": "^4.3",
         "doctrine/orm": "^3.5",
+        "doctrine/migrations": "^3.9",
         "inertiajs/inertia-laravel": "^2.0",
         "laravel-doctrine/orm": "^3.1",
         "laravel/framework": "^12.0",
+        "laravel/telescope": "^5.11",
         "laravel/tinker": "^2.10.1",
         "league/tactician": "^1.1",
-        "tightenco/ziggy": "^2.4"
+        "ramsey/uuid": "^4.9",
+        "tightenco/ziggy": "^2.4",
+        "ext-bcmath": "*"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.16",
         "fakerphp/faker": "^1.23",
+        "larastan/larastan": "^3.0",
         "laravel/pail": "^1.2.2",
-        "laravel/pint": "^1.18",
+        "laravel/pint": "^1.24",
         "laravel/sail": "^1.41",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
+        "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^11.5.3"
     },
     "autoload": {
         "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/"
+            "Database\\Seeders\\": "database/seeders/",
+            "Database\\DoctrineMigrations\\": "database/doctrine-migrations/"
         }
     },
     "autoload-dev": {
@@ -54,8 +62,7 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi",
-            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
-            "@php artisan migrate --graceful --ansi"
+            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\""
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
@@ -70,14 +77,23 @@
             "@php artisan config:clear --ansi",
             "@php artisan test"
         ],
-        "lint": "phpcs",
-        "fix": "php-cs-fixer fix --allow-risky=yes",
+        "doctrine:migrations:diff": "@php vendor/bin/doctrine-migrations diff",
+        "doctrine:migrations:migrate": "@php vendor/bin/doctrine-migrations migrate --no-interaction",
+        "doctrine:migrations:status": "@php vendor/bin/doctrine-migrations status",
+        "doctrine:migrations:up-to-date": "@php vendor/bin/doctrine-migrations up-to-date",
+        "lint": "./vendor/bin/pint --repair",
         "stan": "phpstan analyse",
-        "qa": "composer lint && composer stan"
+        "qa": [
+            "@lint",
+            "@stan",
+            "@test"
+        ]
     },
     "extra": {
         "laravel": {
-            "dont-discover": []
+            "dont-discover": [
+                "laravel/telescope"
+            ]
         }
     },
     "config": {

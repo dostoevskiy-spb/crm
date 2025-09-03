@@ -1,6 +1,7 @@
 <?php
 
 return [
+    \App\Modules\Shared\Providers\InfrastructureServiceProvider::class,
     App\Providers\AppServiceProvider::class,
-    App\Infrastructure\Providers\InfrastructureServiceProvider::class,
+    App\Providers\TelescopeServiceProvider::class,
 ];

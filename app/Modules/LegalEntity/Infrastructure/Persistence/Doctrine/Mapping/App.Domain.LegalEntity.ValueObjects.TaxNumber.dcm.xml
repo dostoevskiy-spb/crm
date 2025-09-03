@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping
+    xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <embeddable name="App\Modules\LegalEntity\Domain\ValueObjects\TaxNumber">
+        <field name="ogrn" type="string" length="15" column="ogrn" />
+        <field name="inn" type="string" length="12" column="inn" unique="true" />
+        <field name="kpp" type="string" length="9" column="kpp" />
+    </embeddable>
+</doctrine-mapping>

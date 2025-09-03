@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping
+    xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Modules\Product\Domain\Models\Product" table="product">
+        <id name="uid" type="guid" column="uid">
+            <generator strategy="NONE"/>
+        </id>
+
+        <embedded name="name" class="App\Modules\Product\Domain\ValueObjects\ProductName" column-prefix="false" />
+
+        <field name="status" type="string" length="16" column="status" />
+        <field name="type" type="string" length="16" column="type" />
+
+        <embedded name="unit" class="App\Modules\Product\Domain\ValueObjects\UnitOfMeasure" column-prefix="false" />
+
+        <field name="groupName" type="string" length="50" column="group_name" nullable="true" />
+        <field name="subgroupName" type="string" length="50" column="subgroup_name" nullable="true" />
+        <field name="code1c" type="string" length="50" column="code_1c" nullable="true" />
+
+        <field name="skuValue" type="string" length="50" column="sku" unique="true" />
+
+        <field name="salePrice" type="decimal" precision="12" scale="2" column="sale_price" nullable="true" />
+        <field name="avgPurchaseCostYear" type="decimal" precision="12" scale="2" column="avg_purchase_cost_year" nullable="true" />
+        <field name="lastPurchaseCost" type="decimal" precision="12" scale="2" column="last_purchase_cost" nullable="true" />
+
+        <field name="createdAt" type="datetime_immutable" column="created_at" />
+        <field name="creatorUid" type="guid" column="creator_uid" nullable="true" />
+        <field name="updatedAt" type="datetime_immutable" column="updated_at" nullable="true" />
+        <field name="updatedByUid" type="guid" column="updated_by_uid" nullable="true" />
+    </entity>
+</doctrine-mapping>

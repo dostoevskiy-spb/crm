@@ -23,10 +23,10 @@ class PingController extends Controller
                     properties: [
                         new OA\Property(property: 'message', type: 'string', example: 'pong'),
                         new OA\Property(property: 'timestamp', type: 'string', format: 'date-time', example: '2025-08-08T10:29:29.543305Z'),
-                        new OA\Property(property: 'status', type: 'string', example: 'success')
+                        new OA\Property(property: 'status', type: 'string', example: 'success'),
                     ]
                 )
-            )
+            ),
         ]
     )]
     public function get(): JsonResponse
@@ -34,7 +34,7 @@ class PingController extends Controller
         return response()->json([
             'message' => 'pong',
             'timestamp' => now()->toISOString(),
-            'status' => 'success'
+            'status' => 'success',
         ]);
     }
 
@@ -48,7 +48,7 @@ class PingController extends Controller
             content: new OA\JsonContent(
                 properties: [
                     new OA\Property(property: 'test', type: 'string', example: 'data'),
-                    new OA\Property(property: 'custom_field', type: 'string', example: 'custom_value')
+                    new OA\Property(property: 'custom_field', type: 'string', example: 'custom_value'),
                 ]
             )
         ),
@@ -65,10 +65,10 @@ class PingController extends Controller
                             example: ['test' => 'data', 'custom_field' => 'custom_value']
                         ),
                         new OA\Property(property: 'timestamp', type: 'string', format: 'date-time', example: '2025-08-08T10:30:33.919725Z'),
-                        new OA\Property(property: 'status', type: 'string', example: 'success')
+                        new OA\Property(property: 'status', type: 'string', example: 'success'),
                     ]
                 )
-            )
+            ),
         ]
     )]
     public function post(Request $request): JsonResponse
@@ -77,7 +77,7 @@ class PingController extends Controller
             'message' => 'pong',
             'received_data' => $request->all(),
             'timestamp' => now()->toISOString(),
-            'status' => 'success'
+            'status' => 'success',
         ]);
     }
 }

@@ -1,24 +1,162 @@
 openapi: 3.0.3
 info:
-  title: CRM API - Legal Entity
+  title: CRM API
   version: 1.0.0
   description: |
-    OpenAPI спецификация для управления юридическими лицами (Legal Entity).
-    Содержит эндпоинты:
+    OpenAPI спецификация для CRM системы.
+
+    Legal Entity эндпоинты:
     - POST /api/legal-entities — создание
     - GET /api/legal-entities/{uid} — получение по UID
     - GET /api/legal-entities — список с фильтрацией
+
+    Individual эндпоинты:
+    - POST /api/individuals — создание
+    - GET /api/individuals/{uid} — получение по UID
+    - GET /api/individuals — список с фильтрацией
 servers:
-  - url: /
+  - url: https://nginx
     description: Base path
 tags:
   - name: Legal Entity
     description: Управление юридическими лицами
+  - name: Individual
+    description: Управление физическими лицами
   - name: Product
     description: Управление продуктами и услугами
   - name: Equipment
     description: Управление оборудованием
 paths:
+  /api/individuals:
+    get:
+      tags: [Individual]
+      summary: Получить список физических лиц
+      description: Получает список всех физических лиц с возможностью фильтрации
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Поиск по имени, фамилии или отчеству
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [active, archived]
+          description: Фильтр по статусу
+        - in: query
+          name: is_company_employee
+          schema:
+            type: boolean
+          description: Фильтр по сотрудникам компании
+      responses:
+        '200':
+          description: Список физических лиц
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/IndividualListItem'
+    post:
+      tags: [Individual]
+      summary: Создать физическое лицо
+      description: Создает новое физическое лицо в системе
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateIndividualRequest'
+            examples:
+              default:
+                value:
+                  first_name: Иван
+                  last_name: Иванов
+                  middle_name: Иванович
+                  status: active
+                  position_id: 1
+                  login: ivan123
+                  is_company_employee: false
+      responses:
+        '201':
+          description: Физическое лицо успешно создано
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Физическое лицо успешно создано
+                  data:
+                    $ref: '#/components/schemas/Individual'
+        '400':
+          description: Ошибка создания
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Ошибка валидации
+                  errors:
+                    type: object
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: string
+  /api/individuals/{uid}:
+    get:
+      tags: [Individual]
+      summary: Получить физическое лицо
+      description: Получает данные физического лица по UID
+      parameters:
+        - in: path
+          name: uid
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: UID физического лица
+      responses:
+        '200':
+          description: Данные физического лица
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    $ref: '#/components/schemas/Individual'
+        '404':
+          description: Физическое лицо не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/legal-entities:
     get:
       tags: [Legal Entity]
@@ -734,3 +872,115 @@ components:
         error:
           type: string
       required: [error]
+    CreateIndividualRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 20
+          description: Имя
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 20
+          description: Фамилия
+        middle_name:
+          type: string
+          minLength: 1
+          maxLength: 20
+          description: Отчество
+        status:
+          type: string
+          enum: [active, archived]
+          description: Статус
+        position_id:
+          type: integer
+          minimum: 1
+          nullable: true
+          description: ID должности
+        login:
+          type: string
+          minLength: 6
+          nullable: true
+          description: Логин
+        is_company_employee:
+          type: boolean
+          description: Сотрудник компании
+        creator_uid:
+          type: string
+          format: uuid
+          nullable: true
+      required: [first_name, last_name, middle_name, status]
+    IndividualListItem:
+      type: object
+      properties:
+        uid:
+          type: string
+          format: uuid
+        first_name:
+          type: string
+        last_name:
+          type: string
+        middle_name:
+          type: string
+        full_name:
+          type: string
+          description: ФИО полностью
+        short_name:
+          type: string
+          description: ФИО кратко
+        status:
+          type: string
+        position_id:
+          type: integer
+          nullable: true
+        login:
+          type: string
+          nullable: true
+        is_company_employee:
+          type: boolean
+        creator_uid:
+          type: string
+          format: uuid
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+      required: [uid, first_name, last_name, middle_name, status, is_company_employee, created_at]
+    Individual:
+      type: object
+      properties:
+        uid:
+          type: string
+          format: uuid
+        first_name:
+          type: string
+        last_name:
+          type: string
+        middle_name:
+          type: string
+        full_name:
+          type: string
+          description: ФИО полностью
+        short_name:
+          type: string
+          description: ФИО кратко
+        status:
+          type: string
+        position_id:
+          type: integer
+          nullable: true
+        login:
+          type: string
+          nullable: true
+        is_company_employee:
+          type: boolean
+        creator_uid:
+          type: string
+          format: uuid
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+      required: [uid, first_name, last_name, middle_name, status, is_company_employee, created_at]

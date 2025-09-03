@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping
+    xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <embeddable name="App\Modules\Individual\Domain\ValueObjects\Name">
+        <field name="firstName" type="string" length="20" column="first_name" />
+        <field name="lastName" type="string" length="20" column="last_name" />
+        <field name="middleName" type="string" length="20" column="middle_name" />
+    </embeddable>
+</doctrine-mapping>

@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Infrastructure;
 
-use App\Domain\Individual\ValueObjects\PersonUid;
-use App\Domain\Product\Contracts\ProductRepositoryInterface;
-use App\Domain\Product\Models\Product as DomainProduct;
-use App\Domain\Product\ValueObjects\ProductName;
-use App\Domain\Product\ValueObjects\ProductPrice;
-use App\Domain\Product\ValueObjects\ProductStatus;
-use App\Domain\Product\ValueObjects\ProductType;
-use App\Domain\Product\ValueObjects\ProductUid as DomainProductUid;
-use App\Domain\Product\ValueObjects\Sku;
-use App\Domain\Product\ValueObjects\UnitOfMeasure;
+use App\Modules\Individual\Domain\ValueObjects\Id;
+use App\Modules\Product\Domain\Contracts\ProductRepositoryInterface;
+use App\Modules\Product\Domain\Models\Product as DomainProduct;
+use App\Modules\Product\Domain\ValueObjects\Id as DomainProductUid;
+use App\Modules\Product\Domain\ValueObjects\ProductName;
+use App\Modules\Product\Domain\ValueObjects\ProductPrice;
+use App\Modules\Product\Domain\ValueObjects\ProductStatus;
+use App\Modules\Product\Domain\ValueObjects\ProductType;
+use App\Modules\Product\Domain\ValueObjects\Sku;
+use App\Modules\Product\Domain\ValueObjects\UnitOfMeasure;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\TestCase;
@@ -113,8 +113,8 @@ final class DoctrineProductRepositoryTest extends TestCase
 
     public function test_delete_and_find_by_creator(): void
     {
-        $creator1 = new PersonUid((string) Str::uuid());
-        $creator2 = new PersonUid((string) Str::uuid());
+        $creator1 = new Id((string) Str::uuid());
+        $creator2 = new Id((string) Str::uuid());
 
         $p1 = new DomainProduct(
             name: new ProductName('DelMe'),
