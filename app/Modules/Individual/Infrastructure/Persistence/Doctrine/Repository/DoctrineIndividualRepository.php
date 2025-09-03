@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Individual\Infrastructure\Persistence\Doctrine\Repository;
 
-use App\Domain\Individual\ValueObjects\PersonStatus;
 use App\Modules\Individual\Domain\Contracts\IndividualRepositoryInterface;
 use App\Modules\Individual\Domain\Enums\StatusEnum;
 use App\Modules\Individual\Domain\Models\Individual;
@@ -153,8 +152,8 @@ final class DoctrineIndividualRepository implements IndividualRepositoryInterfac
             StatusEnum::ACTIVE => 1,
             StatusEnum::ARCHIVED => 2,
         };
+
         return $this->em->getRepository(Individual::class)
             ->findBy(['status' => $code]);
     }
 }
-

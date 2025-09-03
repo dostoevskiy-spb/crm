@@ -8,11 +8,11 @@ use App\Modules\Individual\Domain\ValueObjects\Id;
 use App\Modules\Product\Application\Handler\GetProductHandler;
 use App\Modules\Product\Application\Query\GetProductQuery;
 use App\Modules\Product\Domain\Contracts\ProductRepositoryInterface;
+use App\Modules\Product\Domain\Enum\StatusEnum;
 use App\Modules\Product\Domain\Models\Product;
-use App\Modules\Product\Domain\ValueObjects\ProductName;
-use App\Modules\Product\Domain\ValueObjects\ProductPrice;
-use App\Modules\Product\Domain\ValueObjects\ProductStatus;
-use App\Modules\Product\Domain\ValueObjects\ProductType;
+use App\Modules\Product\Domain\ValueObjects\Name;
+use App\Modules\Product\Domain\ValueObjects\Price;
+use App\Modules\Product\Domain\ValueObjects\Type;
 use App\Modules\Product\Domain\ValueObjects\Sku;
 use App\Modules\Product\Domain\ValueObjects\UnitOfMeasure;
 use Illuminate\Support\Str;
@@ -26,9 +26,9 @@ final class GetProductHandlerTest extends TestCase
         $updater = new Id((string) Str::uuid());
 
         $product = new Product(
-            name: new ProductName('X-Tracker'),
-            status: ProductStatus::active(),
-            type: new ProductType('item'),
+            name: new Name('X-Tracker'),
+            status: StatusEnum::ACTIVE,
+            type: new Type('item'),
             unit: new UnitOfMeasure('шт.'),
             sku: new Sku('XTR-001'),
             creatorUid: $creator
@@ -36,9 +36,9 @@ final class GetProductHandlerTest extends TestCase
         $product->setGroupName('Оборудование');
         $product->setSubgroupName('Трекеры');
         $product->setCode1c('XT-1C');
-        $product->setSalePrice(new ProductPrice('4500.00'));
-        $product->setAvgPurchaseCostYear(new ProductPrice('3000.00'));
-        $product->setLastPurchaseCost(new ProductPrice('3200.00'));
+        $product->setSalePrice(new Price('4500.00'));
+        $product->setAvgPurchaseCostYear(new Price('3000.00'));
+        $product->setLastPurchaseCost(new Price('3200.00'));
         $product->touch($updater);
 
         $repo = $this->createMock(ProductRepositoryInterface::class);

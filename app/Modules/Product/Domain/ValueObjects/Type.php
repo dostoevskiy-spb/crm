@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Product\Domain\ValueObjects;
 
-final class ProductType
+final class Type
 {
     public const ITEM = 'item';
 

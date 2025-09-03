@@ -92,4 +92,3 @@ class IndividualController extends Controller
         ], 200, ['Content-Type' => 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE);
     }
 }
-

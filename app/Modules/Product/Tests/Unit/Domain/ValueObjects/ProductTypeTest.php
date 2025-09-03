@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Modules\Product\Tests\Unit\Domain\ValueObjects;
 
-use App\Modules\Product\Domain\ValueObjects\ProductType;
+use App\Modules\Product\Domain\ValueObjects\Type;
 use PHPUnit\Framework\TestCase;
 
 final class ProductTypeTest extends TestCase
 {
     public function test_valid_values(): void
     {
-        $item = new ProductType('item');
-        $service = new ProductType('service');
+        $item = new Type('item');
+        $service = new Type('service');
         $this->assertSame('item', $item->value());
         $this->assertSame('service', $service->value());
         $this->assertTrue($item->isItem());
@@ -23,6 +23,6 @@ final class ProductTypeTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid product type');
-        new ProductType('goods');
+        new Type('goods');
     }
 }

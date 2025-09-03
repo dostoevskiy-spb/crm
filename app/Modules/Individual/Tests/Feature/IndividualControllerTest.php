@@ -452,4 +452,3 @@ class IndividualControllerTest extends TestCase
         $this->assertTrue($responseData[0]['is_company_employee']);
     }
 }
-

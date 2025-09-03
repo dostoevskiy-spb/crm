@@ -6,12 +6,12 @@ namespace Tests\Integration\Infrastructure;
 
 use App\Modules\Individual\Domain\ValueObjects\Id;
 use App\Modules\Product\Domain\Contracts\ProductRepositoryInterface;
+use App\Modules\Product\Domain\Enum\StatusEnum;
 use App\Modules\Product\Domain\Models\Product as DomainProduct;
 use App\Modules\Product\Domain\ValueObjects\Id as DomainProductUid;
-use App\Modules\Product\Domain\ValueObjects\ProductName;
-use App\Modules\Product\Domain\ValueObjects\ProductPrice;
-use App\Modules\Product\Domain\ValueObjects\ProductStatus;
-use App\Modules\Product\Domain\ValueObjects\ProductType;
+use App\Modules\Product\Domain\ValueObjects\Name;
+use App\Modules\Product\Domain\ValueObjects\Price;
+use App\Modules\Product\Domain\ValueObjects\Type;
 use App\Modules\Product\Domain\ValueObjects\Sku;
 use App\Modules\Product\Domain\ValueObjects\UnitOfMeasure;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -33,16 +33,16 @@ final class DoctrineProductRepositoryTest extends TestCase
     public function test_save_and_find_by_uid_and_by_sku_and_by_code1c(): void
     {
         $p = new DomainProduct(
-            name: new ProductName('Alpha'),
-            status: ProductStatus::active(),
-            type: new ProductType('item'),
+            name: new Name('Alpha'),
+            status: StatusEnum::ACTIVE,
+            type: new Type('item'),
             unit: new UnitOfMeasure('шт.'),
             sku: new Sku('A-1')
         );
         $p->setCode1c('C-1');
         $this->repo->save($p);
 
-        $foundByUid = $this->repo->findByUid(new DomainProductUid($p->uid()->value()));
+        $foundByUid = $this->repo->findByUid();
         $this->assertNotNull($foundByUid);
         $this->assertSame('Alpha', $foundByUid->name()->value());
 
@@ -58,9 +58,9 @@ final class DoctrineProductRepositoryTest extends TestCase
     public function test_exists_by_sku_and_code1c(): void
     {
         $p = new DomainProduct(
-            name: new ProductName('Beta'),
-            status: ProductStatus::inactive(),
-            type: new ProductType('service'),
+            name: new Name('Beta'),
+            status: StatusEnum::INACTIVE,
+            type: new Type('service'),
             unit: new UnitOfMeasure('усл.'),
             sku: new Sku('B-1')
         );
@@ -76,21 +76,21 @@ final class DoctrineProductRepositoryTest extends TestCase
     public function test_find_by_filters_all_supported_fields(): void
     {
         $p1 = new DomainProduct(
-            name: new ProductName('KVS Tracker'),
-            status: ProductStatus::active(),
-            type: new ProductType('item'),
+            name: new Name('KVS Tracker'),
+            status: StatusEnum::ACTIVE,
+            type: new Type('item'),
             unit: new UnitOfMeasure('шт.'),
             sku: new Sku('KV-1')
         );
         $p1->setGroupName('Оборудование');
         $p1->setSubgroupName('Трекеры');
         $p1->setCode1c('KVS-1C');
-        $p1->setSalePrice(new ProductPrice('100.00'));
+        $p1->setSalePrice(new Price('100.00'));
 
         $p2 = new DomainProduct(
-            name: new ProductName('Other Service'),
-            status: ProductStatus::inactive(),
-            type: new ProductType('service'),
+            name: new Name('Other Service'),
+            status: StatusEnum::INACTIVE,
+            type: new Type('service'),
             unit: new UnitOfMeasure('усл.'),
             sku: new Sku('OS-1')
         );
@@ -117,17 +117,17 @@ final class DoctrineProductRepositoryTest extends TestCase
         $creator2 = new Id((string) Str::uuid());
 
         $p1 = new DomainProduct(
-            name: new ProductName('DelMe'),
-            status: ProductStatus::active(),
-            type: new ProductType('item'),
+            name: new Name('DelMe'),
+            status: StatusEnum::ACTIVE,
+            type: new Type('item'),
             unit: new UnitOfMeasure('шт.'),
             sku: new Sku('DEL-1'),
             creatorUid: $creator1
         );
         $p2 = new DomainProduct(
-            name: new ProductName('KeepMe'),
-            status: ProductStatus::active(),
-            type: new ProductType('item'),
+            name: new Name('KeepMe'),
+            status: StatusEnum::ACTIVE,
+            type: new Type('item'),
             unit: new UnitOfMeasure('шт.'),
             sku: new Sku('KEP-1'),
             creatorUid: $creator2

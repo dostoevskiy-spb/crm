@@ -50,4 +50,3 @@ final class CreateIndividualHandler
         return $saved->uid()->value();
     }
 }
-

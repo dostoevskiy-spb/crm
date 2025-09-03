@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\LegalEntity\Domain\ValueObjects;
 
-use Doctrine\ORM\Mapping as ORM;
-
 final class TaxNumber
 {
     private string $ogrn;
@@ -151,7 +149,7 @@ final class TaxNumber
             '51', '52', '53', '54', '55', '56', '57', '58', '59', '60',
             '61', '62', '63', '64', '65', '66', '67', '68', '69', '70',
             '71', '72', '73', '74', '75', '76', '77', '78', '79', '83',
-            '86', '87', '89', '91', '92', '99'
+            '86', '87', '89', '91', '92', '99',
         ];
 
         $regionCode = substr($kpp, 0, 2);

@@ -48,4 +48,3 @@ class CreateIndividualRequest extends FormRequest
         ];
     }
 }
-

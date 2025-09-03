@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Product\Domain\ValueObjects;
 
-final class ProductPrice
+final class Price
 {
     private string $value; // normalized decimal string with 2 scale
 

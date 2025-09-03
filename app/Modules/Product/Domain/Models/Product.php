@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Modules\Product\Domain\Models;
 
 use App\Modules\Individual\Domain\ValueObjects\Id as IndividualId;
+use App\Modules\Product\Domain\Enum\StatusEnum;
 use App\Modules\Product\Domain\ValueObjects\Id;
-use App\Modules\Product\Domain\ValueObjects\ProductName;
-use App\Modules\Product\Domain\ValueObjects\ProductPrice;
-use App\Modules\Product\Domain\ValueObjects\ProductStatus;
-use App\Modules\Product\Domain\ValueObjects\ProductType;
+use App\Modules\Product\Domain\ValueObjects\Name;
+use App\Modules\Product\Domain\ValueObjects\Price;
+use App\Modules\Product\Domain\ValueObjects\Type;
 use App\Modules\Product\Domain\ValueObjects\Sku;
 use App\Modules\Product\Domain\ValueObjects\UnitOfMeasure;
 use DateTimeImmutable;
@@ -19,13 +19,10 @@ class Product
 {
     private Id $uid;
 
-    #[ORM\Embedded(class: ProductName::class, columnPrefix: false)]
-    private ProductName $name;
+    private Name $name;
 
-    #[ORM\Column(name: 'status', type: 'string', length: 16)]
-    private string $status;
+    private StatusEnum $status;
 
-    #[ORM\Column(name: 'type', type: 'string', length: 16)]
     private string $type;
 
     #[ORM\Embedded(class: UnitOfMeasure::class, columnPrefix: false)]
@@ -65,9 +62,9 @@ class Product
     private ?string $updatedByUid = null;
 
     public function __construct(
-        ProductName $name,
-        ProductStatus $status,
-        ProductType $type,
+        Name $name,
+        StatusEnum $status,
+        Type $type,
         UnitOfMeasure $unit,
         Sku $sku,
         ?IndividualId $creatorUid = null,
@@ -75,7 +72,7 @@ class Product
     ) {
         $this->uid = $uid ?? Id::next();
         $this->name = $name;
-        $this->status = $status->value();
+        $this->status = $status;
         $this->type = $type->value();
         $this->unit = $unit;
         $this->skuValue = $sku->value();
@@ -83,24 +80,24 @@ class Product
         $this->createdAt = new DateTimeImmutable;
     }
 
-    public function uid(): IndividualId
+    public function uid(): Id
     {
-        return new IndividualId($this->uid);
+        return $this->uid;
     }
 
-    public function name(): ProductName
+    public function name(): Name
     {
         return $this->name;
     }
 
-    public function status(): ProductStatus
+    public function status(): StatusEnum
     {
-        return new ProductStatus($this->status);
+        return $this->status;
     }
 
-    public function type(): ProductType
+    public function type(): Type
     {
-        return new ProductType($this->type);
+        return new Type($this->type);
     }
 
     public function unit(): UnitOfMeasure
@@ -128,19 +125,19 @@ class Product
         return new Sku($this->skuValue);
     }
 
-    public function salePrice(): ?ProductPrice
+    public function salePrice(): ?Price
     {
-        return $this->salePrice !== null ? new ProductPrice($this->salePrice) : null;
+        return $this->salePrice !== null ? new Price($this->salePrice) : null;
     }
 
-    public function avgPurchaseCostYear(): ?ProductPrice
+    public function avgPurchaseCostYear(): ?Price
     {
-        return $this->avgPurchaseCostYear !== null ? new ProductPrice($this->avgPurchaseCostYear) : null;
+        return $this->avgPurchaseCostYear !== null ? new Price($this->avgPurchaseCostYear) : null;
     }
 
-    public function lastPurchaseCost(): ?ProductPrice
+    public function lastPurchaseCost(): ?Price
     {
-        return $this->lastPurchaseCost !== null ? new ProductPrice($this->lastPurchaseCost) : null;
+        return $this->lastPurchaseCost !== null ? new Price($this->lastPurchaseCost) : null;
     }
 
     public function createdAt(): DateTimeImmutable
@@ -178,27 +175,27 @@ class Product
         $this->code1c = $code1c;
     }
 
-    public function setSalePrice(?ProductPrice $price): void
+    public function setSalePrice(?Price $price): void
     {
         $this->salePrice = $price?->value();
     }
 
-    public function setAvgPurchaseCostYear(?ProductPrice $price): void
+    public function setAvgPurchaseCostYear(?Price $price): void
     {
         $this->avgPurchaseCostYear = $price?->value();
     }
 
-    public function setLastPurchaseCost(?ProductPrice $price): void
+    public function setLastPurchaseCost(?Price $price): void
     {
         $this->lastPurchaseCost = $price?->value();
     }
 
-    public function setStatus(ProductStatus $status): void
+    public function setStatus(StatusEnum $status): void
     {
-        $this->status = $status->value();
+        $this->status = $status;
     }
 
-    public function setType(ProductType $type): void
+    public function setType(Type $type): void
     {
         $this->type = $type->value();
     }

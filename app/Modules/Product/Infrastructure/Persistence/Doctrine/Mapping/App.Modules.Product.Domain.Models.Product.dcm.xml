@@ -9,7 +9,7 @@
             <generator strategy="NONE"/>
         </id>
 
-        <embedded name="name" class="App\Modules\Product\Domain\ValueObjects\ProductName" column-prefix="false" />
+        <embedded name="name" class="App\Modules\Product\Domain\ValueObjects\Name" column-prefix="false" />
 
         <field name="status" type="string" length="16" column="status" />
         <field name="type" type="string" length="16" column="type" />

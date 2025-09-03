@@ -4,12 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Product\Domain\ValueObjects;
 
-use Doctrine\ORM\Mapping as ORM;
-
-#[ORM\Embeddable]
-final class ProductName
+final class Name
 {
-    #[ORM\Column(name: 'name', type: 'string', length: 50)]
     private string $value;
 
     public function __construct(string $value)

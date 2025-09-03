@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Individual\Domain\Models;
 
-use App\Modules\Individual\Domain\Entities\ContactInfo;
 use App\Domain\Individual\ValueObjects\PersonStatus;
+use App\Modules\Individual\Domain\Entities\ContactInfo;
 use App\Modules\Individual\Domain\ValueObjects\Id;
 use App\Modules\Individual\Domain\ValueObjects\Login;
 use App\Modules\Individual\Domain\ValueObjects\Name;

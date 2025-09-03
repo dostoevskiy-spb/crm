@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Modules\Product\Tests\Unit\Domain\ValueObjects;
 
-use App\Modules\Product\Domain\ValueObjects\ProductName;
+use App\Modules\Product\Domain\ValueObjects\Name;
 use PHPUnit\Framework\TestCase;
 
 final class ProductNameTest extends TestCase
 {
     public function test_valid_name(): void
     {
-        $vo = new ProductName('Hammer');
+        $vo = new Name('Hammer');
         $this->assertSame('Hammer', $vo->value());
         $this->assertSame('Hammer', (string) $vo);
     }
@@ -20,13 +20,13 @@ final class ProductNameTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Product name must be between 1 and 50 characters');
-        new ProductName('');
+        new Name('');
     }
 
     public function test_too_long_name_throws(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Product name must be between 1 and 50 characters');
-        new ProductName(str_repeat('a', 51));
+        new Name(str_repeat('a', 51));
     }
 }

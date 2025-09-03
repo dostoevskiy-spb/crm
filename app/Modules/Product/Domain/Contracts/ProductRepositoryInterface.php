@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace App\Modules\Product\Domain\Contracts;
 
 use App\Modules\Product\Domain\Models\Product;
+use App\Modules\Product\Domain\ValueObjects\Id;
 use App\Modules\Product\Domain\ValueObjects\Sku;
 
 interface ProductRepositoryInterface
 {
-    public function findByUid(\App\Domain\Product\Contracts\Id $uid): ?Product;
+    public function findByUid(Id $uid): ?Product;
 
     public function findBySku(Sku $sku): ?Product;
 
@@ -21,7 +22,7 @@ interface ProductRepositoryInterface
 
     public function save(Product $product): Product;
 
-    public function delete(\App\Domain\Product\Contracts\Id $uid): bool;
+    public function delete(Id $uid): bool;
 
     public function existsBySku(Sku $sku): bool;
 

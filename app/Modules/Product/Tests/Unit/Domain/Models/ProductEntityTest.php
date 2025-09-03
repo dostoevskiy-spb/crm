@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Modules\Product\Tests\Unit\Domain\Models;
 
 use App\Modules\Individual\Domain\ValueObjects\Id;
+use App\Modules\Product\Domain\Enum\StatusEnum;
 use App\Modules\Product\Domain\Models\Product;
 use App\Modules\Product\Domain\ValueObjects\Id as DomainProductUid;
-use App\Modules\Product\Domain\ValueObjects\ProductName;
-use App\Modules\Product\Domain\ValueObjects\ProductPrice;
-use App\Modules\Product\Domain\ValueObjects\ProductStatus;
-use App\Modules\Product\Domain\ValueObjects\ProductType;
+use App\Modules\Product\Domain\ValueObjects\Name;
+use App\Modules\Product\Domain\ValueObjects\Price;
+use App\Modules\Product\Domain\ValueObjects\Type;
 use App\Modules\Product\Domain\ValueObjects\Sku;
 use App\Modules\Product\Domain\ValueObjects\UnitOfMeasure;
 use Illuminate\Support\Str;
@@ -22,9 +22,9 @@ final class ProductEntityTest extends TestCase
     {
         $creator = new Id((string) Str::uuid());
         $product = new Product(
-            name: new ProductName('Tracker'),
-            status: ProductStatus::active(),
-            type: new ProductType('item'),
+            name: new Name('Tracker'),
+            status: StatusEnum::ACTIVE,
+            type: new Type('item'),
             unit: new UnitOfMeasure('pcs'),
             sku: new Sku('TR-001'),
             creatorUid: $creator
@@ -43,9 +43,9 @@ final class ProductEntityTest extends TestCase
     public function test_set_optional_fields_and_prices(): void
     {
         $product = new Product(
-            name: new ProductName('Tracker'),
-            status: ProductStatus::active(),
-            type: new ProductType('item'),
+            name: new Name('Tracker'),
+            status: StatusEnum::ACTIVE,
+            type: new Type('item'),
             unit: new UnitOfMeasure('pcs'),
             sku: new Sku('TR-002')
         );
@@ -53,9 +53,9 @@ final class ProductEntityTest extends TestCase
         $product->setGroupName('Hardware');
         $product->setSubgroupName('GPS');
         $product->setCode1c('A1B2');
-        $product->setSalePrice(new ProductPrice('100.00'));
-        $product->setAvgPurchaseCostYear(new ProductPrice('80.50'));
-        $product->setLastPurchaseCost(new ProductPrice('90.00'));
+        $product->setSalePrice(new Price('100.00'));
+        $product->setAvgPurchaseCostYear(new Price('80.50'));
+        $product->setLastPurchaseCost(new Price('90.00'));
 
         $this->assertSame('Hardware', $product->groupName());
         $this->assertSame('GPS', $product->subgroupName());
@@ -68,15 +68,15 @@ final class ProductEntityTest extends TestCase
     public function test_mutators_and_touch(): void
     {
         $product = new Product(
-            name: new ProductName('Old'),
-            status: ProductStatus::inactive(),
-            type: new ProductType('service'),
+            name: new Name('Old'),
+            status: StatusEnum::INACTIVE,
+            type: new Type('service'),
             unit: new UnitOfMeasure('unit'),
             sku: new Sku('TR-003')
         );
 
-        $product->setStatus(ProductStatus::active());
-        $product->setType(new ProductType('item'));
+        $product->setStatus(StatusEnum::ACTIVE);
+        $product->setType(new Type('item'));
         $product->setUnit(new UnitOfMeasure('pcs'));
 
         $this->assertSame('active', $product->status()->value());
@@ -95,9 +95,9 @@ final class ProductEntityTest extends TestCase
     {
         $uid = new DomainProductUid((string) Str::uuid());
         $product = new Product(
-            name: new ProductName('Explicit'),
-            status: ProductStatus::active(),
-            type: new ProductType('item'),
+            name: new Name('Explicit'),
+            status: StatusEnum::ACTIVE,
+            type: new Type('item'),
             unit: new UnitOfMeasure('pcs'),
             sku: new Sku('TR-004'),
             creatorUid: null,

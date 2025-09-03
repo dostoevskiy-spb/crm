@@ -7,10 +7,10 @@ namespace App\Modules\Product\Tests\Unit\Application\Handler;
 use App\Modules\Product\Application\Handler\GetProductsHandler;
 use App\Modules\Product\Application\Query\GetProductsQuery;
 use App\Modules\Product\Domain\Contracts\ProductRepositoryInterface;
+use App\Modules\Product\Domain\Enum\StatusEnum;
 use App\Modules\Product\Domain\Models\Product;
-use App\Modules\Product\Domain\ValueObjects\ProductName;
-use App\Modules\Product\Domain\ValueObjects\ProductStatus;
-use App\Modules\Product\Domain\ValueObjects\ProductType;
+use App\Modules\Product\Domain\ValueObjects\Name;
+use App\Modules\Product\Domain\ValueObjects\Type;
 use App\Modules\Product\Domain\ValueObjects\Sku;
 use App\Modules\Product\Domain\ValueObjects\UnitOfMeasure;
 use PHPUnit\Framework\TestCase;
@@ -20,9 +20,9 @@ final class GetProductsHandlerTest extends TestCase
     public function test_maps_products_to_array(): void
     {
         $p1 = new Product(
-            name: new ProductName('Alpha'),
-            status: ProductStatus::active(),
-            type: new ProductType('item'),
+            name: new Name('Alpha'),
+            status: StatusEnum::INACTIVE,
+            type: new Type('item'),
             unit: new UnitOfMeasure('шт.'),
             sku: new Sku('A-1')
         );
@@ -31,9 +31,9 @@ final class GetProductsHandlerTest extends TestCase
         $p1->setCode1c('C1');
 
         $p2 = new Product(
-            name: new ProductName('Beta'),
-            status: ProductStatus::inactive(),
-            type: new ProductType('service'),
+            name: new Name('Beta'),
+            status: StatusEnum::INACTIVE,
+            type: new Type('service'),
             unit: new UnitOfMeasure('усл.'),
             sku: new Sku('B-1')
         );

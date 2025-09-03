@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\LegalEntity\Domain\ValueObjects;
 
-use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
 
 final class Name
 {
     private string $shortName;
+
     private string $fullName;
 
     public function __construct(string $shortName, string $fullName)

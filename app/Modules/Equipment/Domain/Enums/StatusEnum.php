@@ -2,7 +2,7 @@
 
 namespace App\Modules\Equipment\Domain\Enums;
 
-enum EquipmentStatusEnum: string
+enum StatusEnum: string
 {
     case WAREHOUSE = 'warehouse'; // На складе
 

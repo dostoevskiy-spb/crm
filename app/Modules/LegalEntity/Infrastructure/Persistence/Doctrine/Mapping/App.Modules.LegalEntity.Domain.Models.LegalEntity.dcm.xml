@@ -7,7 +7,7 @@
     <entity name="App\Modules\LegalEntity\Domain\Models\LegalEntity" table="legal_entity">
         <id name="uid" type="guid" column="uid" />
 
-        <embedded name="name" class="App\Modules\LegalEntity\Domain\ValueObjects\CompanyName" column-prefix="false" />
+        <embedded name="name" class="App\Modules\LegalEntity\Domain\ValueObjects\Name" column-prefix="false" />
         <embedded name="taxNumber" class="App\Modules\LegalEntity\Domain\ValueObjects\TaxNumber" column-prefix="false"/>
 
         <field name="legalAddress" type="text" column="legal_address" nullable="true" />

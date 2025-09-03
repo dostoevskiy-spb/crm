@@ -7,7 +7,9 @@ namespace App\Modules\Individual\Domain\ValueObjects;
 final class Name
 {
     private string $firstName;
+
     private string $lastName;
+
     private string $middleName;
 
     public function __construct(string $firstName, string $lastName, string $middleName)

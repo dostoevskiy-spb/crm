@@ -46,4 +46,3 @@ final class DoctrineFactory
         return new EntityManager($connection, $config);
     }
 }
-

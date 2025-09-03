@@ -4,7 +4,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
-    <embeddable name="App\Modules\Product\Domain\ValueObjects\ProductName">
+    <embeddable name="App\Modules\Product\Domain\ValueObjects\Name">
         <field name="value" type="string" length="50" column="name" />
     </embeddable>
 </doctrine-mapping>

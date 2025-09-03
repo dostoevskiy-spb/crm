@@ -6,8 +6,8 @@ namespace App\Modules\LegalEntity\Tests\Unit\Domain\Models;
 
 use App\Modules\Individual\Domain\ValueObjects\Id;
 use App\Modules\LegalEntity\Domain\Models\LegalEntity;
-use App\Modules\LegalEntity\Domain\ValueObjects\Name;
 use App\Modules\LegalEntity\Domain\ValueObjects\Id;
+use App\Modules\LegalEntity\Domain\ValueObjects\Name;
 use App\Modules\LegalEntity\Domain\ValueObjects\TaxNumber;
 use PHPUnit\Framework\TestCase;
 

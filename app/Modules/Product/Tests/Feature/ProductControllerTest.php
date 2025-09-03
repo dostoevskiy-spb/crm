@@ -6,11 +6,11 @@ namespace App\Modules\Product\Tests\Feature;
 
 use App\Modules\Individual\Domain\ValueObjects\Id;
 use App\Modules\Product\Domain\Contracts\ProductRepositoryInterface;
+use App\Modules\Product\Domain\Enum\StatusEnum;
 use App\Modules\Product\Domain\Models\Product as DomainProduct;
-use App\Modules\Product\Domain\ValueObjects\ProductName;
-use App\Modules\Product\Domain\ValueObjects\ProductPrice;
-use App\Modules\Product\Domain\ValueObjects\ProductStatus;
-use App\Modules\Product\Domain\ValueObjects\ProductType;
+use App\Modules\Product\Domain\ValueObjects\Name;
+use App\Modules\Product\Domain\ValueObjects\Price;
+use App\Modules\Product\Domain\ValueObjects\Type;
 use App\Modules\Product\Domain\ValueObjects\Sku;
 use App\Modules\Product\Domain\ValueObjects\UnitOfMeasure;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -71,9 +71,9 @@ class ProductControllerTest extends TestCase
     public function test_create_product_duplicate_sku(): void
     {
         $p = new DomainProduct(
-            name: new ProductName('Base Product'),
-            status: ProductStatus::active(),
-            type: new ProductType('item'),
+            name: new Name('Base Product'),
+            status: StatusEnum::ACTIVE,
+            type: new Type('item'),
             unit: new UnitOfMeasure('шт.'),
             sku: new Sku('DUP-001'),
             creatorUid: null
@@ -113,9 +113,9 @@ class ProductControllerTest extends TestCase
     {
         $creatorUid = new Id((string) Str::uuid());
         $p = new DomainProduct(
-            name: new ProductName('X-Tracker'),
-            status: ProductStatus::active(),
-            type: new ProductType('item'),
+            name: new Name('X-Tracker'),
+            status: StatusEnum::ACTIVE,
+            type: new Type('item'),
             unit: new UnitOfMeasure('шт.'),
             sku: new Sku('XTR-001'),
             creatorUid: $creatorUid
@@ -123,7 +123,7 @@ class ProductControllerTest extends TestCase
         $p->setGroupName('Оборудование');
         $p->setSubgroupName('Трекеры');
         $p->setCode1c('XT-1C');
-        $p->setSalePrice(new ProductPrice('4500.00'));
+        $p->setSalePrice(new Price('4500.00'));
         $this->repository->save($p);
 
         $uid = $p->uid()->value();
@@ -154,16 +154,16 @@ class ProductControllerTest extends TestCase
     public function test_index_list_all(): void
     {
         $p1 = new DomainProduct(
-            name: new ProductName('Alpha'),
-            status: ProductStatus::active(),
-            type: new ProductType('item'),
+            name: new Name('Alpha'),
+            status: StatusEnum::ACTIVE,
+            type: new Type('item'),
             unit: new UnitOfMeasure('шт.'),
             sku: new Sku('A-1')
         );
         $p2 = new DomainProduct(
-            name: new ProductName('Beta'),
-            status: ProductStatus::inactive(),
-            type: new ProductType('service'),
+            name: new Name('Beta'),
+            status: StatusEnum::INACTIVE,
+            type: new Type('service'),
             unit: new UnitOfMeasure('усл.'),
             sku: new Sku('B-1')
         );
@@ -181,9 +181,9 @@ class ProductControllerTest extends TestCase
     public function test_index_with_filters(): void
     {
         $p1 = new DomainProduct(
-            name: new ProductName('KVS Tracker'),
-            status: ProductStatus::active(),
-            type: new ProductType('item'),
+            name: new Name('KVS Tracker'),
+            status: StatusEnum::ACTIVE,
+            type: new Type('item'),
             unit: new UnitOfMeasure('шт.'),
             sku: new Sku('KV-1')
         );
@@ -192,9 +192,9 @@ class ProductControllerTest extends TestCase
         $p1->setCode1c('KVS-1C');
 
         $p2 = new DomainProduct(
-            name: new ProductName('Other Service'),
-            status: ProductStatus::inactive(),
-            type: new ProductType('service'),
+            name: new Name('Other Service'),
+            status: StatusEnum::INACTIVE,
+            type: new Type('service'),
             unit: new UnitOfMeasure('усл.'),
             sku: new Sku('OS-1')
         );

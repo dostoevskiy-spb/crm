@@ -6,6 +6,7 @@ namespace App\Modules\Product\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Modules\Product\Domain\Contracts\ProductRepositoryInterface;
 use App\Modules\Product\Domain\Models\Product;
+use App\Modules\Product\Domain\ValueObjects\Id;
 use App\Modules\Product\Domain\ValueObjects\Sku;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -13,7 +14,7 @@ final class DoctrineProductRepository implements ProductRepositoryInterface
 {
     public function __construct(private EntityManagerInterface $em) {}
 
-    public function findByUid(\App\Infrastructure\Persistence\Doctrine\Repository\Id $uid): ?Product
+    public function findByUid(Id $uid): ?Product
     {
         return $this->em->find(Product::class, $uid->value());
     }
@@ -97,7 +98,7 @@ final class DoctrineProductRepository implements ProductRepositoryInterface
         return $product;
     }
 
-    public function delete(\App\Infrastructure\Persistence\Doctrine\Repository\Id $uid): bool
+    public function delete(Id $uid): bool
     {
         $entity = $this->findByUid($uid);
         if (! $entity) {
