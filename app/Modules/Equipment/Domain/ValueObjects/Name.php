@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Equipment\Domain\ValueObjects;
 
-use Doctrine\ORM\Mapping as ORM;
-
 final class Name
 {
     private string $value;

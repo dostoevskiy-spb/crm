@@ -11,8 +11,8 @@ use App\Modules\Product\Domain\Enum\StatusEnum;
 use App\Modules\Product\Domain\Models\Product;
 use App\Modules\Product\Domain\ValueObjects\Name;
 use App\Modules\Product\Domain\ValueObjects\Price;
-use App\Modules\Product\Domain\ValueObjects\Type;
 use App\Modules\Product\Domain\ValueObjects\Sku;
+use App\Modules\Product\Domain\ValueObjects\Type;
 use App\Modules\Product\Domain\ValueObjects\UnitOfMeasure;
 
 final readonly class CreateProductHandler
