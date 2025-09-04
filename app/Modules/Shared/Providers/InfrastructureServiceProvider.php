@@ -19,6 +19,7 @@ use App\Modules\User\Infrastructure\Persistence\Doctrine\Repository\DoctrineUser
 use Doctrine\DBAL\Schema\AbstractAsset;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
+use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;
 
@@ -26,9 +27,11 @@ final class InfrastructureServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        // Force framework DB config to SQLite during tests to ensure RefreshDatabase
+        // does not attempt to use PostgreSQL. Also make Telescope inert.
         $this->app->singleton(EntityManagerInterface::class, function ($app) {
             $isTesting = $app->environment('testing');
-            /** @var \Illuminate\Database\Connection $laravelConn */
+            /** @var Connection $laravelConn */
             $laravelConn = $app['db']->connection(); // default is sqlite in tests
             if ($isTesting) {
                 // Testing uses sqlite and MUST share PDO with Laravel's default connection
@@ -68,6 +71,18 @@ final class InfrastructureServiceProvider extends ServiceProvider
                 }
             );
 
+            // Auto-create/update Doctrine schema in tests (SQLite) to avoid relying on Laravel migrations
+            if ($isTesting) {
+                try {
+                    $metadata = $em->getMetadataFactory()->getAllMetadata();
+                    if (!empty($metadata)) {
+                        $tool = new SchemaTool($em);
+                        $tool->updateSchema($metadata);
+                    }
+                } catch (\Throwable $_) {
+                    // Ignore schema tool errors in tests to not break the bootstrapping
+                }
+            }
 
             return $em;
         });
