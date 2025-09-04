@@ -176,7 +176,7 @@ class LegalEntityControllerTest extends TestCase
         );
         $e2 = new DomainLegalEntity(
             name: new Name('Beta', 'Beta LLC'),
-            taxNumber: new TaxNumber('1107746232593', '7701870742', '770101001'),
+            taxNumber: new TaxNumber('1197746176462', '7751158643', '775101001'),
             creatorUid: null
         );
         $this->repository->save($e1);
@@ -211,8 +211,8 @@ class LegalEntityControllerTest extends TestCase
         $e2->setPhoneNumber('+74950000000');
         $e2->setEmail('info@other.local');
 
-        $this->repository->save($e1);
-        $this->repository->save($e2);
+        $r = $this->repository->save($e1);
+        $r2 = $this->repository->save($e2);
 
         // shortName LIKE
         $resp1 = $this->getJson('/api/legal-entities?shortName=KV');
@@ -221,6 +221,10 @@ class LegalEntityControllerTest extends TestCase
 
         // inn exact
         $resp2 = $this->getJson('/api/legal-entities?inn=4444444444');
+        $resp2->assertStatus(200);
+        $this->assertCount(0, $resp2->json());
+
+        $resp2 = $this->getJson('/api/legal-entities?inn=7701870742');
         $resp2->assertStatus(200);
         $this->assertCount(1, $resp2->json());
 
