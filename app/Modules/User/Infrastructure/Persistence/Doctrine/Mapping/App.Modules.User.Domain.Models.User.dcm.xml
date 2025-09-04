@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping
+    xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.doctrine-project.org/schemas/orm/doctrine-mapping http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Modules\User\Domain\Models\User" table="crm_user">
+        <id name="uid" type="guid" column="uid">
+            <generator strategy="NONE"/>
+        </id>
+
+        <field name="emailValue" type="string" length="255" column="email" unique="true" />
+        <field name="status" type="string" length="16" column="status" />
+        <field name="passwordHash" type="string" length="255" column="password_hash" />
+
+        <field name="createdAt" type="datetime_immutable" column="created_at" />
+        <field name="updatedAt" type="datetime_immutable" column="updated_at" nullable="true" />
+        <field name="lastLoginAt" type="datetime_immutable" column="last_login_at" nullable="true" />
+
+        <indexes>
+            <index name="crm_user_status_index" columns="status" />
+            <index name="crm_user_created_at_index" columns="created_at" />
+        </indexes>
+    </entity>
+</doctrine-mapping>

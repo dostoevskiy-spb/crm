@@ -67,7 +67,6 @@ final class LegalEntityController extends Controller
 
             return response()->json($result);
         } catch (\Exception $e) {
-            die(var_dump($e->getMessage()));
             return response()->json(['error' => 'Internal server error'], 500);
         }
     }
