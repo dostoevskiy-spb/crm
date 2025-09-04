@@ -19,6 +19,7 @@ use App\Modules\User\Infrastructure\Persistence\Doctrine\Repository\DoctrineUser
 use Doctrine\DBAL\Schema\AbstractAsset;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;
 
 final class InfrastructureServiceProvider extends ServiceProvider
@@ -26,32 +27,18 @@ final class InfrastructureServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(EntityManagerInterface::class, function ($app) {
-            $isTesting = $app->environment('testing') || method_exists($app, 'runningUnitTests') && $app->runningUnitTests();
-
+            $isTesting = $app->environment('testing');
+            /** @var \Illuminate\Database\Connection $laravelConn */
+            $laravelConn = $app['db']->connection(); // default is sqlite in tests
             if ($isTesting) {
                 // Testing uses sqlite and MUST share PDO with Laravel's default connection
-                /** @var \Illuminate\Database\Connection $laravelConn */
-                $laravelConn = $app['db']->connection(); // default is sqlite in tests
-                $isMemory = ($laravelConn->getConfig('database') === ':memory:');
                 $dbParams = [
                     'driver' => 'pdo_sqlite',
                     'pdo' => $laravelConn->getPdo(),
+                    'memory' => true,
                 ];
-                if ($isMemory) {
-                    $dbParams['memory'] = true;
-                }
             } else {
-                // Force PostgreSQL in non-testing environments per project stack
-                $pg = (array) config('database.connections.pgsql', []);
-                $dbParams = [
-                    'driver' => 'pdo_pgsql',
-                    'host' => $pg['host'] ?? '127.0.0.1',
-                    'port' => $pg['port'] ?? 5432,
-                    'dbname' => $pg['database'] ?? null,
-                    'user' => $pg['username'] ?? null,
-                    'password' => $pg['password'] ?? null,
-                    'charset' => $pg['charset'] ?? 'utf8',
-                ];
+                $dbParams = $laravelConn->getConfig();
             }
 
             // XML mapping files are placed under Infrastructure mapping directory
@@ -81,18 +68,6 @@ final class InfrastructureServiceProvider extends ServiceProvider
                 }
             );
 
-            // Ensure schema exists for sqlite during tests
-            if ($isTesting) {
-                $metadata = $em->getMetadataFactory()->getAllMetadata();
-                if (! empty($metadata)) {
-                    $tool = new SchemaTool($em);
-                    try {
-                        $tool->updateSchema($metadata);
-                    } catch (\Throwable $e) {
-                        // ignore; Laravel migrations may have already provisioned schema
-                    }
-                }
-            }
 
             return $em;
         });

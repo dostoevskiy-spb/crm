@@ -51,8 +51,7 @@ final class TaxNumber
             // OGRN validation: last digit must equal (first 12 digits % 11) % 10
             $controlNumber = (int) substr($ogrn, -1);
             $baseNumber = substr($ogrn, 0, 12);
-            $calculatedControl = ((int) bcmod($baseNumber, '11')) % 10;
-
+            $calculatedControl = (int) substr(bcsub(substr($ogrn, 0, -1), bcmul(bcdiv(substr($ogrn, 0, -1), '11', 0), '11')), -1);
             if ($controlNumber !== $calculatedControl) {
                 throw new \InvalidArgumentException('Invalid OGRN: control digit check failed');
             }

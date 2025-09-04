@@ -16,7 +16,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'sqlite'),
+    'default' =>  env('APP_ENV', 'production') === 'testing' ? 'sqlite' : 'pgsql',
 
     /*
     |--------------------------------------------------------------------------

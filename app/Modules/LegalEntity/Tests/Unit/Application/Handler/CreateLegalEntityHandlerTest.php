@@ -18,7 +18,7 @@ final class CreateLegalEntityHandlerTest extends TestCase
         $repository = $this->createMock(LegalEntityRepositoryInterface::class);
         $repository->expects($this->once())
             ->method('existsByInn')
-            ->with('1234567890')
+            ->with('7701870742')
             ->willReturn(false);
 
         $repository->expects($this->once())
@@ -32,8 +32,8 @@ final class CreateLegalEntityHandlerTest extends TestCase
         $dto = new CreateLegalEntityDTO(
             shortName: 'ООО "Тест"',
             fullName: 'Общество с ограниченной ответственностью "Тест"',
-            ogrn: '1234567890123',
-            inn: '1234567890',
+            ogrn: '1107746232593',
+            inn: '7701870742',
             kpp: '123456789',
             legalAddress: '123456, г. Москва, ул. Тестовая, д. 1',
             phoneNumber: '+7 495 123-45-67',

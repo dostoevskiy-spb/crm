@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\LegalEntity\Tests\Feature;
 
-use App\Modules\Individual\Domain\ValueObjects\Id;
+use App\Modules\User\Domain\ValueObjects\Id as UserId;
 use App\Modules\LegalEntity\Domain\Contracts\LegalEntityRepositoryInterface;
 use App\Modules\LegalEntity\Domain\Models\LegalEntity as DomainLegalEntity;
 use App\Modules\LegalEntity\Domain\ValueObjects\Name;
@@ -30,8 +30,8 @@ class LegalEntityControllerTest extends TestCase
         $data = [
             'shortName' => 'KVS',
             'fullName' => 'KVS Systems LLC',
-            'ogrn' => '1234567890123',
-            'inn' => '1234567890',
+            'ogrn' => '1107746232593',
+            'inn' => '7701870742',
             'kpp' => '123456789',
             'legalAddress' => 'Saint-Petersburg',
             'phoneNumber' => '+78120000000',
@@ -54,12 +54,14 @@ class LegalEntityControllerTest extends TestCase
                 'uid' => $uid,
                 'shortName' => 'KVS',
                 'fullName' => 'KVS Systems LLC',
-                'ogrn' => '1234567890123',
-                'inn' => '1234567890',
+                'ogrn' => '1107746232593',
+                'inn' => '7701870742',
                 'kpp' => '123456789',
                 'legalAddress' => 'Saint-Petersburg',
                 'phoneNumber' => '+78120000000',
                 'email' => 'office@example.com',
+                "creatorUid" => null,
+                "curatorUid" => null
             ]);
     }
 
@@ -67,7 +69,7 @@ class LegalEntityControllerTest extends TestCase
     {
         $entity = new DomainLegalEntity(
             name: new Name('KVS', 'KVS Systems LLC'),
-            taxNumber: new TaxNumber('1234567890123', '1234567890', '123456789'),
+            taxNumber: new TaxNumber('1107746232593', '7701870742', '123456789'),
             creatorUid: null
         );
         $this->repository->save($entity);
@@ -75,8 +77,8 @@ class LegalEntityControllerTest extends TestCase
         $data = [
             'shortName' => 'Another',
             'fullName' => 'Another LLC',
-            'ogrn' => '1234567890123',
-            'inn' => '1234567890',
+            'ogrn' => '1107746232593',
+            'inn' => '7701870742',
             'kpp' => '123456789',
         ];
 
@@ -89,25 +91,38 @@ class LegalEntityControllerTest extends TestCase
     public function test_create_legal_entity_validation_error_inn(): void
     {
         $data = [
-            'shortName' => 'KVS',
-            'fullName' => 'KVS Systems LLC',
-            'ogrn' => '1234567890123',
-            'inn' => '123',
-            'kpp' => '123456789',
+            [
+                'shortName' => 'KVS',
+                'fullName' => 'KVS Systems LLC',
+                'ogrn' => '1107746232593',
+                'inn' => '77018707',
+                'kpp' => '123456789',
+                'error' => 'INN must contain exactly 10 digits for legal entities or 12 digits for individuals/IP'
+            ],
+            [
+                'shortName' => 'KVS',
+                'fullName' => 'KVS Systems LLC',
+                'ogrn' => '1107746232593',
+                'inn' => '770187074',
+                'kpp' => '123456789',
+                'error' => 'INN must contain exactly 10 digits for legal entities or 12 digits for individuals/IP'
+            ],
         ];
+        foreach ($data as $legalEntity) {
+            $response = $this->postJson('/api/legal-entities', $legalEntity);
 
-        $response = $this->postJson('/api/legal-entities', $data);
-
-        $response->assertStatus(400)
-            ->assertJsonFragment(['error' => 'INN must contain exactly 10 digits']);
+            $response->assertStatus(400)
+                ->assertJsonFragment(['error' => $legalEntity['error']]);
+        }
     }
+
 
     public function test_show_legal_entity_found(): void
     {
-        $creatorUid = new Id((string) Str::uuid());
+        $creatorUid = new UserId((string)Str::uuid());
         $entity = new DomainLegalEntity(
             name: new Name('KVS', 'KVS Systems LLC'),
-            taxNumber: new TaxNumber('1234567890123', '1234567890', '123456789'),
+            taxNumber: new TaxNumber('1107746232593', '7701870742', '123456789'),
             creatorUid: $creatorUid
         );
         $entity->setLegalAddress('Saint-Petersburg');
@@ -120,15 +135,25 @@ class LegalEntityControllerTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'uid', 'shortName', 'fullName', 'ogrn', 'inn', 'kpp',
-                'legalAddress', 'phoneNumber', 'email', 'createdAt', 'creatorUid', 'curatorUid',
+                'uid',
+                'shortName',
+                'fullName',
+                'ogrn',
+                'inn',
+                'kpp',
+                'legalAddress',
+                'phoneNumber',
+                'email',
+                'createdAt',
+                'creatorUid',
+                'curatorUid',
             ])
             ->assertJson([
                 'uid' => $uid,
                 'shortName' => 'KVS',
                 'fullName' => 'KVS Systems LLC',
-                'ogrn' => '1234567890123',
-                'inn' => '1234567890',
+                'ogrn' => '1107746232593',
+                'inn' => '7701870742',
                 'kpp' => '123456789',
                 'legalAddress' => 'Saint-Petersburg',
                 'phoneNumber' => '+78120000000',
@@ -139,7 +164,7 @@ class LegalEntityControllerTest extends TestCase
 
     public function test_show_legal_entity_not_found(): void
     {
-        $response = $this->getJson('/api/legal-entities/'.(string) Str::uuid());
+        $response = $this->getJson('/api/legal-entities/' . (string)Str::uuid());
         $response->assertStatus(404)
             ->assertJson(['error' => 'Legal entity not found']);
     }
@@ -148,12 +173,12 @@ class LegalEntityControllerTest extends TestCase
     {
         $e1 = new DomainLegalEntity(
             name: new Name('Alpha', 'Alpha LLC'),
-            taxNumber: new TaxNumber('1234567890123', '1111111111', '123456789'),
+            taxNumber: new TaxNumber('1107746232593', '7701870742', '123456789'),
             creatorUid: null
         );
         $e2 = new DomainLegalEntity(
             name: new Name('Beta', 'Beta LLC'),
-            taxNumber: new TaxNumber('1234567890123', '2222222222', '123456789'),
+            taxNumber: new TaxNumber('1107746232593', '7701870742', '123456789'),
             creatorUid: null
         );
         $this->repository->save($e1);
@@ -169,7 +194,7 @@ class LegalEntityControllerTest extends TestCase
 
     public function test_index_with_filters(): void
     {
-        $curator = new Id((string) Str::uuid());
+        $curator = new UserId((string)Str::uuid());
 
         $e1 = new DomainLegalEntity(
             name: new Name('KVS', 'KVS Systems LLC'),
@@ -212,7 +237,7 @@ class LegalEntityControllerTest extends TestCase
         $this->assertCount(1, $resp4->json());
 
         // curatorUid
-        $resp5 = $this->getJson('/api/legal-entities?curatorUid='.$curator->value());
+        $resp5 = $this->getJson('/api/legal-entities?curatorUid=' . $curator->value());
         $resp5->assertStatus(200);
         $this->assertCount(1, $resp5->json());
     }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\LegalEntity\Infrastructure\Persistence\Doctrine\Repository;
 
-use App\Modules\Individual\Domain\ValueObjects\Id;
+use App\Modules\LegalEntity\Domain\ValueObjects\Id;
 use App\Modules\LegalEntity\Domain\Contracts\LegalEntityRepositoryInterface;
 use App\Modules\LegalEntity\Domain\Models\LegalEntity;
 use App\Modules\User\Domain\ValueObjects\Id as UserId;
