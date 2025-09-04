@@ -15,8 +15,6 @@ use Tests\TestCase;
 
 class LegalEntityControllerTest extends TestCase
 {
-    use RefreshDatabase;
-
     private LegalEntityRepositoryInterface $repository;
 
     protected function setUp(): void
@@ -32,7 +30,7 @@ class LegalEntityControllerTest extends TestCase
             'fullName' => 'KVS Systems LLC',
             'ogrn' => '1107746232593',
             'inn' => '7701870742',
-            'kpp' => '123456789',
+            'kpp' => '770101001',
             'legalAddress' => 'Saint-Petersburg',
             'phoneNumber' => '+78120000000',
             'email' => 'office@example.com',
@@ -56,7 +54,7 @@ class LegalEntityControllerTest extends TestCase
                 'fullName' => 'KVS Systems LLC',
                 'ogrn' => '1107746232593',
                 'inn' => '7701870742',
-                'kpp' => '123456789',
+                'kpp' => '770101001',
                 'legalAddress' => 'Saint-Petersburg',
                 'phoneNumber' => '+78120000000',
                 'email' => 'office@example.com',
@@ -69,7 +67,7 @@ class LegalEntityControllerTest extends TestCase
     {
         $entity = new DomainLegalEntity(
             name: new Name('KVS', 'KVS Systems LLC'),
-            taxNumber: new TaxNumber('1107746232593', '7701870742', '123456789'),
+            taxNumber: new TaxNumber('1107746232593', '7701870742', '770101001'),
             creatorUid: null
         );
         $this->repository->save($entity);
@@ -79,7 +77,7 @@ class LegalEntityControllerTest extends TestCase
             'fullName' => 'Another LLC',
             'ogrn' => '1107746232593',
             'inn' => '7701870742',
-            'kpp' => '123456789',
+            'kpp' => '770101001',
         ];
 
         $response = $this->postJson('/api/legal-entities', $data);
@@ -96,7 +94,7 @@ class LegalEntityControllerTest extends TestCase
                 'fullName' => 'KVS Systems LLC',
                 'ogrn' => '1107746232593',
                 'inn' => '77018707',
-                'kpp' => '123456789',
+                'kpp' => '770101001',
                 'error' => 'INN must contain exactly 10 digits for legal entities or 12 digits for individuals/IP'
             ],
             [
@@ -104,7 +102,7 @@ class LegalEntityControllerTest extends TestCase
                 'fullName' => 'KVS Systems LLC',
                 'ogrn' => '1107746232593',
                 'inn' => '770187074',
-                'kpp' => '123456789',
+                'kpp' => '770101001',
                 'error' => 'INN must contain exactly 10 digits for legal entities or 12 digits for individuals/IP'
             ],
         ];
@@ -122,7 +120,7 @@ class LegalEntityControllerTest extends TestCase
         $creatorUid = new UserId((string)Str::uuid());
         $entity = new DomainLegalEntity(
             name: new Name('KVS', 'KVS Systems LLC'),
-            taxNumber: new TaxNumber('1107746232593', '7701870742', '123456789'),
+            taxNumber: new TaxNumber('1107746232593', '7701870742', '770101001'),
             creatorUid: $creatorUid
         );
         $entity->setLegalAddress('Saint-Petersburg');
@@ -154,7 +152,7 @@ class LegalEntityControllerTest extends TestCase
                 'fullName' => 'KVS Systems LLC',
                 'ogrn' => '1107746232593',
                 'inn' => '7701870742',
-                'kpp' => '123456789',
+                'kpp' => '770101001',
                 'legalAddress' => 'Saint-Petersburg',
                 'phoneNumber' => '+78120000000',
                 'email' => 'office@example.com',
@@ -173,12 +171,12 @@ class LegalEntityControllerTest extends TestCase
     {
         $e1 = new DomainLegalEntity(
             name: new Name('Alpha', 'Alpha LLC'),
-            taxNumber: new TaxNumber('1107746232593', '7701870742', '123456789'),
+            taxNumber: new TaxNumber('1107746232593', '7701870742', '770101001'),
             creatorUid: null
         );
         $e2 = new DomainLegalEntity(
             name: new Name('Beta', 'Beta LLC'),
-            taxNumber: new TaxNumber('1107746232593', '7701870742', '123456789'),
+            taxNumber: new TaxNumber('1107746232593', '7701870742', '770101001'),
             creatorUid: null
         );
         $this->repository->save($e1);
@@ -198,7 +196,7 @@ class LegalEntityControllerTest extends TestCase
 
         $e1 = new DomainLegalEntity(
             name: new Name('KVS', 'KVS Systems LLC'),
-            taxNumber: new TaxNumber('1234567890123', '3333333333', '123456789'),
+            taxNumber: new TaxNumber('1107746232593', '7701870742', '770101001'),
             creatorUid: null
         );
         $e1->setPhoneNumber('+78120000000');
@@ -207,7 +205,7 @@ class LegalEntityControllerTest extends TestCase
 
         $e2 = new DomainLegalEntity(
             name: new Name('Other', 'Other LLC'),
-            taxNumber: new TaxNumber('1234567890123', '4444444444', '123456789'),
+            taxNumber: new TaxNumber('1197746176462', '7751158643', '775101001'),
             creatorUid: null
         );
         $e2->setPhoneNumber('+74950000000');

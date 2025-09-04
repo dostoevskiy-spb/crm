@@ -38,7 +38,7 @@ final class InfrastructureServiceProvider extends ServiceProvider
                 $dbParams = [
                     'driver' => 'pdo_sqlite',
                     'pdo' => $laravelConn->getPdo(),
-                    'memory' => true,
+//                    'memory' => true,
                 ];
             } else {
                 $dbParams = $laravelConn->getConfig();
