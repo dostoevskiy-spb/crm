@@ -11,10 +11,10 @@ use App\Modules\LegalEntity\Domain\Models\LegalEntity;
 use App\Modules\LegalEntity\Domain\ValueObjects\Name;
 use App\Modules\LegalEntity\Domain\ValueObjects\TaxNumber;
 
-final class CreateLegalEntityHandler
+final readonly class CreateLegalEntityHandler
 {
     public function __construct(
-        private readonly LegalEntityRepositoryInterface $legalEntityRepository
+        private LegalEntityRepositoryInterface $legalEntityRepository
     ) {}
 
     public function __invoke(CreateLegalEntityCommand $command): string

@@ -6,7 +6,7 @@ namespace App\Modules\LegalEntity\Domain\Contracts;
 
 use App\Modules\Individual\Domain\ValueObjects\Id;
 use App\Modules\LegalEntity\Domain\Models\LegalEntity;
-use App\Modules\LegalEntity\Domain\ValueObjects\Id;
+use App\Modules\User\Domain\ValueObjects\Id as UserId;
 
 interface LegalEntityRepositoryInterface
 {
@@ -24,7 +24,7 @@ interface LegalEntityRepositoryInterface
 
     public function existsByInn(string $inn): bool;
 
-    public function findByCurator(Id $curatorUid): array;
+    public function findByCurator(UserId $curatorUid): array;
 
-    public function findByCreator(Id $creatorUid): array;
+    public function findByCreator(UserId $creatorUid): array;
 }

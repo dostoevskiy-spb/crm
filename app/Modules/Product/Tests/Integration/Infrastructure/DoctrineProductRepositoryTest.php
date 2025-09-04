@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Integration\Infrastructure;
+namespace App\Modules\Product\Tests\Integration\Infrastructure;
 
 use App\Modules\Individual\Domain\ValueObjects\Id;
 use App\Modules\Product\Domain\Contracts\ProductRepositoryInterface;

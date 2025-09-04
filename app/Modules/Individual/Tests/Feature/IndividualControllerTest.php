@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Individual\Tests\Feature;
 
-use App\Domain\Individual\ValueObjects\PersonStatus;
 use App\Modules\Individual\Domain\Contracts\IndividualRepositoryInterface;
+use App\Modules\Individual\Domain\Enums\StatusEnum;
 use App\Modules\Individual\Domain\Models\Individual as DomainIndividual;
 use App\Modules\Individual\Domain\ValueObjects\Id;
 use App\Modules\Individual\Domain\ValueObjects\Login;
@@ -192,7 +192,7 @@ class IndividualControllerTest extends TestCase
         // Create first individual
         $this->repository->save(new DomainIndividual(
             name: new Name('Test', 'User', 'Test'),
-            status: new PersonStatus(1),
+            status: StatusEnum::ACTIVE,
             creatorUid: null,
             positionId: null,
             login: new Login('testlogin')
@@ -250,7 +250,7 @@ class IndividualControllerTest extends TestCase
         // Seed via Doctrine repository to align with domain persistence
         $this->repository->save(new DomainIndividual(
             name: new Name('Test', 'User', 'Middle'),
-            status: new PersonStatus(1),
+            status: StatusEnum::ACTIVE,
             creatorUid: null,
             positionId: 2,
             login: new Login('testuser'),
@@ -312,7 +312,7 @@ class IndividualControllerTest extends TestCase
         // Create test individuals
         $individual1 = $this->repository->save(new DomainIndividual(
             name: new Name('John', 'Doe', 'Smith'),
-            status: new PersonStatus(1),
+            status: StatusEnum::ACTIVE,
             creatorUid: null,
             positionId: null,
             login: new Login(null),
@@ -321,7 +321,7 @@ class IndividualControllerTest extends TestCase
 
         $individual2 = $this->repository->save(new DomainIndividual(
             name: new Name('Jane', 'Doe', 'Ann'),
-            status: new PersonStatus(1),
+            status: StatusEnum::ACTIVE,
             creatorUid: null,
             positionId: null,
             login: new Login(null),
@@ -363,7 +363,7 @@ class IndividualControllerTest extends TestCase
         // Create test individuals
         $this->repository->save(new DomainIndividual(
             name: new Name('John', 'Doe', 'Smith'),
-            status: new PersonStatus(1),
+            status: StatusEnum::ACTIVE,
             creatorUid: null,
             positionId: null,
             login: new Login(null)
@@ -371,7 +371,7 @@ class IndividualControllerTest extends TestCase
 
         $this->repository->save(new DomainIndividual(
             name: new Name('Jane', 'Smith', 'Ann'),
-            status: new PersonStatus(1),
+            status: StatusEnum::ACTIVE,
             creatorUid: null,
             positionId: null,
             login: new Login(null)
@@ -393,7 +393,7 @@ class IndividualControllerTest extends TestCase
         // Create test individuals with different statuses
         $this->repository->save(new DomainIndividual(
             name: new Name('Active', 'User', 'One'),
-            status: new PersonStatus(1),
+            status: StatusEnum::ACTIVE,
             creatorUid: null,
             positionId: null,
             login: new Login(null)
@@ -401,7 +401,7 @@ class IndividualControllerTest extends TestCase
 
         $this->repository->save(new DomainIndividual(
             name: new Name('Inactive', 'User', 'Two'),
-            status: new PersonStatus(2),
+            status: StatusEnum::ARCHIVED,
             creatorUid: null,
             positionId: null,
             login: new Login(null)
@@ -424,7 +424,7 @@ class IndividualControllerTest extends TestCase
         // Create test individuals
         $this->repository->save(new DomainIndividual(
             name: new Name('Employee', 'User', 'One'),
-            status: new PersonStatus(1),
+            status: StatusEnum::ACTIVE,
             creatorUid: null,
             positionId: null,
             login: new Login(null),
@@ -433,7 +433,7 @@ class IndividualControllerTest extends TestCase
 
         $this->repository->save(new DomainIndividual(
             name: new Name('Client', 'User', 'Two'),
-            status: new PersonStatus(1),
+            status: StatusEnum::ACTIVE,
             creatorUid: null,
             positionId: null,
             login: new Login(null),

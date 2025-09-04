@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Shared\Infrastructure\Persistence\Doctrine;
 
+use App\Modules\Individual\Infrastructure\Persistence\Doctrine\Types\Id;
 use App\Modules\Individual\Infrastructure\Persistence\Doctrine\Types\IndividualStatusType;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Types\Type;
@@ -29,6 +30,10 @@ final class DoctrineFactory
         // Register custom types
         if (! Type::hasType(IndividualStatusType::NAME)) {
             Type::addType(IndividualStatusType::NAME, IndividualStatusType::class);
+        }
+
+        if (! Type::hasType(Id::NAME)) {
+            Type::addType(Id::NAME, Id::class);
         }
 
         $connection = DriverManager::getConnection($dbParams, $config);

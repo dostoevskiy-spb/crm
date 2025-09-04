@@ -24,7 +24,7 @@ final class GetIndividualHandler
         }
 
         return [
-            'uid' => $individual->uid()->value(),
+            'uid' => $individual->id()->value(),
             'first_name' => $individual->getFirstName(),
             'last_name' => $individual->getLastName(),
             'middle_name' => $individual->getMiddleName(),

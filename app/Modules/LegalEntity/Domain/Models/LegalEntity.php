@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\LegalEntity\Domain\Models;
 
-use App\Modules\Individual\Domain\ValueObjects\Id;
+use App\Modules\LegalEntity\Domain\ValueObjects\Id;
+use App\Modules\User\Domain\ValueObjects\Id as UserId;
 use App\Modules\LegalEntity\Domain\ValueObjects\Name;
 use App\Modules\LegalEntity\Domain\ValueObjects\TaxNumber;
+use DateTimeImmutable;
 
 class LegalEntity
 {
@@ -22,22 +24,22 @@ class LegalEntity
 
     private ?string $email = null;
 
-    private \DateTimeImmutable $createdAt;
+    private DateTimeImmutable $createdAt;
 
-    private ?string $creatorUid = null;
+    private ?UserId $creatorUid = null;
 
-    private ?string $curatorUid = null;
+    private ?UserId $curatorUid = null;
 
     public function __construct(
         Name $name,
         TaxNumber $taxNumber,
-        ?Id $creatorUid = null,
+        ?UserId $creatorUid = null,
         ?Id $uid = null
     ) {
         $this->name = $name;
         $this->taxNumber = $taxNumber;
-        $this->creatorUid = $creatorUid?->value();
-        $this->createdAt = new \DateTimeImmutable;
+        $this->creatorUid = $creatorUid;
+        $this->createdAt = new DateTimeImmutable;
         $this->uid = $uid ?? Id::next();
     }
 
@@ -71,19 +73,19 @@ class LegalEntity
         return $this->email;
     }
 
-    public function createdAt(): \DateTimeImmutable
+    public function createdAt(): DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function creatorUid(): ?Id
+    public function creatorUid(): ?UserId
     {
-        return $this->creatorUid ? new Id($this->creatorUid) : null;
+        return $this->creatorUid;
     }
 
-    public function curatorUid(): ?Id
+    public function curatorUid(): ?UserId
     {
-        return $this->curatorUid ? new Id($this->curatorUid) : null;
+        return $this->curatorUid;
     }
 
     public function setLegalAddress(?string $legalAddress): void
@@ -101,8 +103,8 @@ class LegalEntity
         $this->email = $email;
     }
 
-    public function setCuratorUid(?Id $curatorUid): void
+    public function setCuratorUid(?UserId $curatorUid): void
     {
-        $this->curatorUid = $curatorUid?->value();
+        $this->curatorUid = $curatorUid;
     }
 }

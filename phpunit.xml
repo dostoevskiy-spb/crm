@@ -5,11 +5,26 @@
          colors="true"
 >
     <testsuites>
-        <testsuite name="Unit">
-            <directory>tests/Unit</directory>
+
+        <testsuite  name="Individual">
+            <directory>app/Modules/Individual/Tests/Unit</directory>
+            <directory>app/Modules/Individual/Tests/Feature</directory>
+            <directory>app/Modules/Individual/Tests/Integration</directory>
         </testsuite>
-        <testsuite name="Feature">
-            <directory>tests/Feature</directory>
+        <testsuite name="LegalEntity">
+            <directory>app/Modules/LegalEntity/Tests/Unit</directory>
+            <directory>app/Modules/LegalEntity/Tests/Feature</directory>
+            <directory>app/Modules/LegalEntity/Tests/Integration</directory>
+        </testsuite>
+        <testsuite name="Product">
+            <directory>app/Modules/Product/Tests/Unit</directory>
+            <directory>app/Modules/Product/Tests/Feature</directory>
+            <directory>app/Modules/Product/Tests/Integration</directory>
+        </testsuite>
+        <testsuite name="Equipment">
+            <directory>app/Modules/Equipment/Tests/Unit</directory>
+            <directory>app/Modules/Equipment/Tests/Feature</directory>
+            <directory>app/Modules/Equipment/Tests/Integration</directory>
         </testsuite>
     </testsuites>
     <source>

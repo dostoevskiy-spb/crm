@@ -7,7 +7,7 @@ namespace App\Modules\LegalEntity\Infrastructure\Persistence\Doctrine\Repository
 use App\Modules\Individual\Domain\ValueObjects\Id;
 use App\Modules\LegalEntity\Domain\Contracts\LegalEntityRepositoryInterface;
 use App\Modules\LegalEntity\Domain\Models\LegalEntity;
-use App\Modules\LegalEntity\Domain\ValueObjects\Id;
+use App\Modules\User\Domain\ValueObjects\Id as UserId;
 use Doctrine\ORM\EntityManagerInterface;
 
 final class DoctrineLegalEntityRepository implements LegalEntityRepositoryInterface
@@ -102,13 +102,13 @@ final class DoctrineLegalEntityRepository implements LegalEntityRepositoryInterf
         return (int) $qb->getQuery()->getSingleScalarResult() > 0;
     }
 
-    public function findByCurator(Id $curatorUid): array
+    public function findByCurator(UserId $curatorUid): array
     {
         return $this->em->getRepository(LegalEntity::class)
             ->findBy(['curatorUid' => $curatorUid->value()]);
     }
 
-    public function findByCreator(Id $creatorUid): array
+    public function findByCreator(UserId $creatorUid): array
     {
         return $this->em->getRepository(LegalEntity::class)
             ->findBy(['creatorUid' => $creatorUid->value()]);

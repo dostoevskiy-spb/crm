@@ -7,7 +7,7 @@ namespace App\Modules\LegalEntity\Tests\Unit\Domain\ValueObjects;
 use App\Modules\LegalEntity\Domain\ValueObjects\Name;
 use PHPUnit\Framework\TestCase;
 
-final class CompanyNameTest extends TestCase
+final class NameTest extends TestCase
 {
     public function test_can_create_valid_company_name(): void
     {

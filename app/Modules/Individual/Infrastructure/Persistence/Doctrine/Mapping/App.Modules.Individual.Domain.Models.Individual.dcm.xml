@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
     <entity name="App\Modules\Individual\Domain\Models\Individual" table="individual">
-        <id name="uid" type="guid" column="uid" />
+        <id name="id" type="individual_id" column="individual_id" />
 
         <embedded name="name" class="App\Modules\Individual\Domain\ValueObjects\Name" column-prefix="false" />
 

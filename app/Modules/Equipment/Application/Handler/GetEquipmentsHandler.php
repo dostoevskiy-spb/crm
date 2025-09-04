@@ -6,6 +6,7 @@ namespace App\Modules\Equipment\Application\Handler;
 
 use App\Modules\Equipment\Application\Query\GetEquipmentsQuery;
 use App\Modules\Equipment\Domain\Contracts\EquipmentRepositoryInterface;
+use App\Modules\Equipment\Domain\Models\Equipment;
 
 final readonly class GetEquipmentsHandler
 {
@@ -17,16 +18,16 @@ final readonly class GetEquipmentsHandler
     {
         $items = $this->repository->findByFilters($query->filters);
 
-        return array_map(static function ($e) {
+        return array_map(static function (Equipment $e) {
             return [
-                'uid' => $e->uid()->value(),
-                'name' => $e->name()->value(),
-                'status' => $e->status()->value(),
-                'transportUid' => $e->transportUid(),
-                'warehouse' => $e->warehouse(),
-                'issuedToUid' => $e->issuedToUid()?->value(),
-                'createdAt' => $e->createdAt()->format('Y-m-d H:i:s'),
-                'creatorUid' => $e->creatorUid()?->value(),
+                'uid' => $e->uid->value(),
+                'name' => $e->name->value(),
+                'status' => $e->status->value,
+                'transportUid' => $e->transportUid,
+                'warehouse' => $e->warehouse,
+                'issuedToUid' => $e->issuedToUid?->value(),
+                'createdAt' => $e->createdAt->format('Y-m-d H:i:s'),
+                'creatorUid' => $e->creatorUid?->value(),
             ];
         }, $items->toArray());
     }

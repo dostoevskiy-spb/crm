@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Modules\Individual\Application\Handler;
 
-use App\Domain\Individual\ValueObjects\PersonStatus;
 use App\Modules\Individual\Application\Command\CreateIndividualCommand;
 use App\Modules\Individual\Domain\Contracts\IndividualRepositoryInterface;
+use App\Modules\Individual\Domain\Enums\StatusEnum;
 use App\Modules\Individual\Domain\Models\Individual;
 use App\Modules\Individual\Domain\ValueObjects\Id;
 use App\Modules\Individual\Domain\ValueObjects\Login;
 use App\Modules\Individual\Domain\ValueObjects\Name;
 
-final class CreateIndividualHandler
+final readonly class CreateIndividualHandler
 {
     public function __construct(
         private IndividualRepositoryInterface $repository
@@ -27,12 +27,7 @@ final class CreateIndividualHandler
         }
 
         $name = new Name($dto->firstName, $dto->lastName, $dto->middleName);
-        $statusCode = match ($dto->status) {
-            'active' => 1,
-            'archived' => 2,
-            default => throw new \InvalidArgumentException('Invalid status value')
-        };
-        $status = new PersonStatus($statusCode);
+        $status = StatusEnum::tryFrom($dto->status);
         $creatorUid = $dto->creatorUid ? new Id($dto->creatorUid) : null;
         $login = new Login($dto->login);
 
@@ -47,6 +42,6 @@ final class CreateIndividualHandler
 
         $saved = $this->repository->save($individual);
 
-        return $saved->uid()->value();
+        return $saved->id()->value();
     }
 }

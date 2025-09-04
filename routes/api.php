@@ -5,6 +5,7 @@ use App\Modules\Equipment\Infrastructure\Http\Controller\EquipmentController;
 use App\Modules\Individual\Infrastructure\Http\Controller\IndividualController;
 use App\Modules\LegalEntity\Infrastructure\Http\Controller\LegalEntityController;
 use App\Modules\Product\Infrastructure\Http\Controller\ProductController;
+use App\Modules\User\Infrastructure\Http\Controller\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/ping', [PingController::class, 'get']);
@@ -28,3 +29,8 @@ Route::get('/products/{uid}', [ProductController::class, 'show'])->where('uid', 
 // Equipment API routes (read-only)
 Route::get('/equipment', [EquipmentController::class, 'index']);
 Route::get('/equipment/{uid}', [EquipmentController::class, 'show'])->where('uid', '[0-9a-fA-F-]{36}');
+
+// Users API routes
+Route::get('/users', [UserController::class, 'index']);
+Route::post('/users', [UserController::class, 'store']);
+Route::get('/users/{uid}', [UserController::class, 'show'])->where('uid', '[0-9a-fA-F-]{36}');

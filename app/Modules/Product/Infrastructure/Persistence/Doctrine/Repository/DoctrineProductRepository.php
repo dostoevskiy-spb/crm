@@ -8,6 +8,7 @@ use App\Modules\Product\Domain\Contracts\ProductRepositoryInterface;
 use App\Modules\Product\Domain\Models\Product;
 use App\Modules\Product\Domain\ValueObjects\Id;
 use App\Modules\Product\Domain\ValueObjects\Sku;
+use App\Modules\User\Domain\ValueObjects\Id as UserId;
 use Doctrine\ORM\EntityManagerInterface;
 
 final class DoctrineProductRepository implements ProductRepositoryInterface
@@ -132,7 +133,7 @@ final class DoctrineProductRepository implements ProductRepositoryInterface
         return (int) $qb->getQuery()->getSingleScalarResult() > 0;
     }
 
-    public function findByCreator(\App\Infrastructure\Persistence\Doctrine\Repository\Id $creatorUid): array
+    public function findByCreator(UserId $creatorUid): array
     {
         return $this->em->getRepository(Product::class)
             ->findBy(['creatorUid' => $creatorUid->value()]);

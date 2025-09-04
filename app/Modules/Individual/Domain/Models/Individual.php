@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Individual\Domain\Models;
 
-use App\Domain\Individual\ValueObjects\PersonStatus;
 use App\Modules\Individual\Domain\Entities\ContactInfo;
+use App\Modules\Individual\Domain\Enums\StatusEnum;
 use App\Modules\Individual\Domain\ValueObjects\Id;
 use App\Modules\Individual\Domain\ValueObjects\Login;
 use App\Modules\Individual\Domain\ValueObjects\Name;
@@ -18,13 +18,13 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Individual
 {
-    private string $uid;
+    private Id $id;
 
     private Name $name;
 
     public ?int $positionId = null;
 
-    private int $status;
+    private StatusEnum $status;
 
     #[ORM\Column(name: 'login', type: 'string', length: 50, nullable: true)]
     private ?string $loginValue = null;
@@ -43,16 +43,16 @@ class Individual
 
     public function __construct(
         Name $name,
-        PersonStatus|int $status,
+        StatusEnum $status,
         ?Id $creatorUid = null,
         ?int $positionId = null,
         ?Login $login = null,
         bool $isCompanyEmployee = false,
         ?Id $uid = null
     ) {
-        $this->uid = ($uid?->value()) ?? Id::next()->value();
+        $this->id = $uid ?? Id::next()->value();
         $this->name = $name;
-        $this->status = $status instanceof PersonStatus ? $status->value() : (int) $status;
+        $this->status = $status;
         $this->creatorUid = $creatorUid?->value();
         $this->positionId = $positionId;
         $this->loginValue = $login?->value();
@@ -60,9 +60,9 @@ class Individual
         $this->createdAt = Carbon::now();
     }
 
-    public function uid(): Id
+    public function id(): Id
     {
-        return new Id($this->uid);
+        return $this->id;
     }
 
     public function name(): Name
@@ -75,7 +75,7 @@ class Individual
         return $this->positionId;
     }
 
-    public function statusId(): int
+    public function status(): StatusEnum
     {
         return $this->status;
     }
@@ -109,9 +109,9 @@ class Individual
         return $this->creatorUid ? new Id($this->creatorUid) : null;
     }
 
-    public function setStatus(PersonStatus|int $status): void
+    public function setStatus(StatusEnum $status): void
     {
-        $this->status = $status instanceof PersonStatus ? $status->value() : (int) $status;
+        $this->status = $status;
     }
 
     public function setLogin(Login $login): void

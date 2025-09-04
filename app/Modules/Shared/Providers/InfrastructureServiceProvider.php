@@ -14,6 +14,9 @@ use App\Modules\Product\Domain\Contracts\ProductRepositoryInterface;
 use App\Modules\Product\Infrastructure\Persistence\Doctrine\Repository\DoctrineProductRepository;
 use App\Modules\Shared\Infrastructure\Persistence\Doctrine\DoctrineFactory;
 use App\Modules\Shared\Infrastructure\Persistence\Doctrine\Transactional;
+use App\Modules\User\Domain\Contracts\UserRepositoryInterface;
+use App\Modules\User\Infrastructure\Persistence\Doctrine\Repository\DoctrineUserRepository;
+use Doctrine\DBAL\Schema\AbstractAsset;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Illuminate\Support\ServiceProvider;
@@ -61,6 +64,23 @@ final class InfrastructureServiceProvider extends ServiceProvider
                 $app->environment('local')
             );
 
+            $config = $em->getConnection()->getConfiguration();
+            $tablesWhiteList = [
+                'legal_entity',
+                'individual',
+                'equipment',
+                'product',
+            ];
+
+            $allow = '/^(?:' . implode('|', $tablesWhiteList) . ')$/i';
+
+            $config->setSchemaAssetsFilter(
+                static function (string|AbstractAsset $asset) use ($allow): bool {
+                    $name = $asset instanceof AbstractAsset ? $asset->getName() : $asset;
+                    return (bool) preg_match($allow, $name);
+                }
+            );
+
             // Ensure schema exists for sqlite during tests
             if ($isTesting) {
                 $metadata = $em->getMetadataFactory()->getAllMetadata();
@@ -81,6 +101,7 @@ final class InfrastructureServiceProvider extends ServiceProvider
         $this->app->bind(ProductRepositoryInterface::class, DoctrineProductRepository::class);
         $this->app->bind(EquipmentRepositoryInterface::class, DoctrineEquipmentRepository::class);
         $this->app->bind(LegalEntityRepositoryInterface::class, DoctrineLegalEntityRepository::class);
+        $this->app->bind(UserRepositoryInterface::class, DoctrineUserRepository::class);
         $this->app->bind(Transactional::class);
     }
 }

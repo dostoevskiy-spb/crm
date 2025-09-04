@@ -26,6 +26,8 @@ tags:
     description: Управление продуктами и услугами
   - name: Equipment
     description: Управление оборудованием
+  - name: User
+    description: Управление пользователями
 paths:
   /api/individuals:
     get:
@@ -106,25 +108,113 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        '422':
-          description: Ошибка валидации
+  /api/users:
+    get:
+      tags: [User]
+      summary: Список пользователей
+      parameters:
+        - in: query
+          name: email
+          schema:
+            type: string
+            format: email
+          description: Фильтр по email (LIKE)
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [active, archived]
+          description: Фильтр по статусу
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserListItem'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags: [User]
+      summary: Создать пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+            examples:
+              default:
+                value:
+                  email: user@example.com
+                  password: qwerty12
+                  status: active
+      responses:
+        '201':
+          description: Создано
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  status:
+                  uid:
                     type: string
-                    example: error
-                  message:
-                    type: string
-                    example: Ошибка валидации
-                  errors:
-                    type: object
-                    additionalProperties:
-                      type: array
-                      items:
-                        type: string
+                    format: uuid
+                required: [uid]
+        '400':
+          description: Ошибка валидации/бизнес-правил
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/users/{uid}:
+    get:
+      tags: [User]
+      summary: Получить пользователя по UID
+      parameters:
+        - in: path
+          name: uid
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Некорректный UID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/individuals/{uid}:
     get:
       tags: [Individual]
@@ -948,6 +1038,64 @@ components:
           type: string
           format: date-time
       required: [uid, first_name, last_name, middle_name, status, is_company_employee, created_at]
+    CreateUserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 6
+        status:
+          type: string
+          enum: [active, archived]
+          description: Статус пользователя
+      required: [email, password]
+    UserListItem:
+      type: object
+      properties:
+        uid:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        status:
+          type: string
+          enum: [active, archived]
+        createdAt:
+          type: string
+          description: 'Формат: YYYY-MM-DD HH:MM:SS'
+        updatedAt:
+          type: string
+          nullable: true
+        lastLoginAt:
+          type: string
+          nullable: true
+      required: [uid, email, status, createdAt]
+    User:
+      type: object
+      properties:
+        uid:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        status:
+          type: string
+          enum: [active, archived]
+        createdAt:
+          type: string
+          description: 'Формат: YYYY-MM-DD HH:MM:SS'
+        updatedAt:
+          type: string
+          nullable: true
+        lastLoginAt:
+          type: string
+          nullable: true
+      required: [uid, email, status, createdAt]
     Individual:
       type: object
       properties:

@@ -6,7 +6,7 @@ namespace App\Modules\LegalEntity\Tests\Unit\Domain\Models;
 
 use App\Modules\Individual\Domain\ValueObjects\Id;
 use App\Modules\LegalEntity\Domain\Models\LegalEntity;
-use App\Modules\LegalEntity\Domain\ValueObjects\Id;
+use App\Modules\User\Domain\ValueObjects\Id as UserId;
 use App\Modules\LegalEntity\Domain\ValueObjects\Name;
 use App\Modules\LegalEntity\Domain\ValueObjects\TaxNumber;
 use PHPUnit\Framework\TestCase;
@@ -17,7 +17,7 @@ final class LegalEntityTest extends TestCase
     {
         $name = new Name('ООО "Тест"', 'Общество с ограниченной ответственностью "Тест"');
         $taxNumber = new TaxNumber('1234567890123', '1234567890', '123456789');
-        $creatorUid = new Id('550e8400-e29b-41d4-a716-446655440000');
+        $creatorUid = new UserId('550e8400-e29b-41d4-a716-446655440000');
 
         $legalEntity = new LegalEntity($name, $taxNumber, $creatorUid);
 

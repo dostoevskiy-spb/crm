@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Individual\Domain\Services;
 
-use App\Domain\Individual\ValueObjects\PersonStatus;
 use App\Modules\Individual\Domain\Contracts\IndividualRepositoryInterface;
 use App\Modules\Individual\Domain\Enums\StatusEnum;
 use App\Modules\Individual\Domain\Models\Individual;
@@ -36,7 +35,6 @@ class IndividualService
             StatusEnum::ACTIVE => 1,
             StatusEnum::ARCHIVED => 2,
         };
-        $personStatus = new PersonStatus($statusCode);
         $creatorUid = isset($data['creator_uid']) && $data['creator_uid']
             ? new Id($data['creator_uid'])
             : null;
@@ -44,7 +42,7 @@ class IndividualService
 
         $individual = new Individual(
             name: $name,
-            status: $personStatus,
+            status: StatusEnum::from($data['status'] ?? null),
             creatorUid: $creatorUid,
             positionId: $data['position_id'] ?? null,
             login: $login,
@@ -107,11 +105,7 @@ class IndividualService
             if (! $statusEnum) {
                 throw new \InvalidArgumentException('Invalid status value');
             }
-            $statusCode = match ($statusEnum) {
-                StatusEnum::ACTIVE => 1,
-                StatusEnum::ARCHIVED => 2,
-            };
-            $individual->setStatus(new PersonStatus($statusCode));
+            $individual->setStatus($statusEnum);
         }
 
         if (isset($data['position_id'])) {

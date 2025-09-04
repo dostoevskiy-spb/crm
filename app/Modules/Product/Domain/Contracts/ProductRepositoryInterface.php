@@ -7,6 +7,7 @@ namespace App\Modules\Product\Domain\Contracts;
 use App\Modules\Product\Domain\Models\Product;
 use App\Modules\Product\Domain\ValueObjects\Id;
 use App\Modules\Product\Domain\ValueObjects\Sku;
+use App\Modules\User\Domain\ValueObjects\Id as UserId;
 
 interface ProductRepositoryInterface
 {
@@ -28,5 +29,5 @@ interface ProductRepositoryInterface
 
     public function existsByCode1c(string $code1c): bool;
 
-    public function findByCreator(\App\Domain\Product\Contracts\Id $creatorUid): array;
+    public function findByCreator(UserId $creatorUid): array;
 }
